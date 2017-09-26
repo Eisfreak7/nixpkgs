@@ -7154,6 +7154,8 @@ in {
 
   pycassa = callPackage ../development/python-modules/pycassa { };
 
+  pyblake2 = callPackage ../development/python-modules/pyblake2 { };
+
   pybluez = buildPythonPackage rec {
     version = "unstable-20160819";
     pname = "pybluez";
