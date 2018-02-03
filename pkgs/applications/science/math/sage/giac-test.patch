@@ -1,0 +1,21 @@
+diff --git a/build/pkgs/giac/spkg-install b/build/pkgs/giac/spkg-install
+index bdd8df6cb8..84836bb1e0 100644
+--- a/build/pkgs/giac/spkg-install
++++ b/build/pkgs/giac/spkg-install
+@@ -85,11 +85,15 @@ rm -rf ${SAGE_LOCAL}/share/giac
+ rm -rf ${SAGE_LOCAL}/share/doc/giac
+ rm -rf ${SAGE_LOCAL}/include/giac
+ 
++
++echo "Listing giac files with modified timestamps"
++find . -printf "%p %TY-%Tm-%Td %TH:%TM:%TS %Tz\n"
++
+ #############################################################
+ #   Install
+ #############################################################
+ echo "Installing giac..."
+-$MAKE install
++strace $MAKE install
+ if [ $? -ne 0 ]; then
+     echo >&2 "Error installing Giac."
+     exit 1

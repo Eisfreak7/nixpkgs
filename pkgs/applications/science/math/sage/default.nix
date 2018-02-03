@@ -29,6 +29,7 @@
 , texlive
 , texinfo
 , hevea
+, strace
 }:
 
 stdenv.mkDerivation rec {
@@ -100,6 +101,7 @@ stdenv.mkDerivation rec {
     which # needed in configure of mpir
     # needed to build the docs of the giac spkg
     texinfo # needed to build maxima
+    strace # needed to debug
     (texlive.combine { inherit (texlive)
       scheme-basic
       collection-pstricks # needed by giac
@@ -122,6 +124,7 @@ stdenv.mkDerivation rec {
     ./spkg-git.patch
     # fix usages of /bin/cp and add necessary argument to function call
     ./spkg-giac.patch
+    ./giac-test.patch
     # environment
     ./env.patch
     # adjust wrapper shebang and patch shebangs after each spkg build
