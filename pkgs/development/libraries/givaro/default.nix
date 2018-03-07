@@ -2,12 +2,12 @@
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";
   pname = "givaro";
-  version = "4.0.2";
+  version = "4.0.4";
   src = fetchFromGitHub {
     owner = "linbox-team";
     repo = "${pname}";
     rev = "v${version}";
-    sha256 = "04n1lyc823z3l1d7mnmqpc9z1pkn646szjchasbfkn74m7cb0qz7";
+    sha256 = "199p8wyj5i63jbnk7j8qbdbfp5rm2lpmcxyk3mdjy9bz7ygx3hhy";
   };
   nativeBuildInputs = [ autoreconfHook ];
   buildInputs = [autoconf automake libtool gmpxx];
