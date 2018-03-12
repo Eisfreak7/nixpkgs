@@ -76,11 +76,10 @@ let
     if blas64_ != null
       then blas64_
       else hasPrefix "x86_64" stdenv.system;
-
-  version = "0.2.20";
 in
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   name = "openblas-${version}";
+  version = "0.2.20";
   src = fetchurl {
     url = "https://github.com/xianyi/OpenBLAS/archive/v${version}.tar.gz";
     sha256 = "157kpkbpwlr57dkmqiwr3qp9fglfidagv7l6fibrhln6v4aqpwsy";
