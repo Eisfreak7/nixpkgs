@@ -14498,6 +14498,8 @@ with pkgs;
 
   pari-galdata = callPackage ../data/misc/pari-galdata {};
 
+  pari-seadata-small = callPackage ../data/misc/pari-seadata-small {};
+
   poly = callPackage ../data/fonts/poly { };
 
   posix_man_pages = callPackage ../data/documentation/man-pages-posix { };
