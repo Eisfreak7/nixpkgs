@@ -14502,6 +14502,8 @@ with pkgs;
 
   poly = callPackage ../data/fonts/poly { };
 
+  polytopes_db = callPackage ../data/misc/polytopes_db { };
+
   posix_man_pages = callPackage ../data/documentation/man-pages-posix { };
 
   powerline-fonts = callPackage ../data/fonts/powerline-fonts { };
