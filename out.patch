@@ -1,0 +1,18 @@
+diff --git a/pkgs/development/libraries/science/math/openblas/default.nix b/pkgs/development/libraries/science/math/openblas/default.nix
+index 5ac0bcd1d7d..a4ee1de4f55 100644
+--- a/pkgs/development/libraries/science/math/openblas/default.nix
++++ b/pkgs/development/libraries/science/math/openblas/default.nix
+@@ -76,11 +76,10 @@ let
+     if blas64_ != null
+       then blas64_
+       else hasPrefix "x86_64" stdenv.system;
+-
+-  version = "0.2.20";
+ in
+-stdenv.mkDerivation {
++stdenv.mkDerivation rec {
+   name = "openblas-${version}";
++  version = "0.2.20";
+   src = fetchurl {
+     url = "https://github.com/xianyi/OpenBLAS/archive/v${version}.tar.gz";
+     sha256 = "157kpkbpwlr57dkmqiwr3qp9fglfidagv7l6fibrhln6v4aqpwsy";

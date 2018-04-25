@@ -12,7 +12,9 @@ let
     linbox = nixpkgs.linbox.override { withSage = true; };
     cypari2 = python2Packages.cypari2.override { inherit pari; };
     arb = nixpkgs.arb.overrideDerivation (attrs: rec {
-      version = "2.11.1";
+      name = "arb-${version}";
+      version = "2.11.1"; # FIXME try to upgrade
+      doCheck = false; # https://github.com/fredrik-johansson/arb/issues/194
       src = fetchFromGitHub {
         owner = "fredrik-johansson";
         repo = "${attrs.pname}";
