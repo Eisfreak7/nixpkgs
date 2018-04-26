@@ -1202,6 +1202,8 @@ in {
 
   datadog = callPackage ../development/python-modules/datadog {};
 
+  dataclasses = callPackage ../development/python-modules/dataclasses { };
+
   debian = callPackage ../development/python-modules/debian {};
 
   defusedxml = callPackage ../development/python-modules/defusedxml {};
@@ -2559,20 +2561,7 @@ in {
 
   fritzconnection = callPackage ../development/python-modules/fritzconnection { };
 
-  frozendict = buildPythonPackage rec {
-    name = "frozendict-0.5";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/f/frozendict/${name}.tar.gz";
-      sha256 = "0m4kg6hbadvf99if78nx01q7qnbyhdw3x4znl5dasgciyi54432n";
-    };
-
-    meta = {
-      homepage = https://github.com/slezica/python-frozendict;
-      description = "An immutable dictionary";
-      license = stdenv.lib.licenses.mit;
-    };
-  };
+  frozendict = callPackage ../development/python-modules/frozendict { };
 
   ftputil = callPackage ../development/python-modules/ftputil { };
 
@@ -8237,6 +8226,8 @@ in {
     };
   };
 
+  pytaglib = callPackage ../development/python-modules/pytaglib { };
+
   pyte = callPackage ../development/python-modules/pyte { };
 
   graphviz = buildPythonPackage rec {
@@ -13073,13 +13064,13 @@ in {
   };
 
   TheanoWithoutCuda = self.Theano.override {
-    cudaSupport = true;
-    cudnnSupport = true;
+    cudaSupport = false;
+    cudnnSupport = false;
   };
 
   TheanoWithCuda = self.Theano.override {
-    cudaSupport = false;
-    cudnnSupport = false;
+    cudaSupport = true;
+    cudnnSupport = true;
   };
 
   thespian = callPackage ../development/python-modules/thespian { };
@@ -16654,20 +16645,7 @@ EOF
     };
   };
 
-  canonicaljson = buildPythonPackage rec {
-    name = "canonicaljson-${version}";
-    version = "1.0.0";
-
-    src = pkgs.fetchgit {
-      url = "https://github.com/matrix-org/python-canonicaljson.git";
-      rev = "refs/tags/v${version}";
-      sha256 = "0r82zlip93y169ijkn8xpbp0yr22mf92pni6dw420vb53l27sprq";
-    };
-
-    propagatedBuildInputs = with self; [
-      frozendict simplejson
-    ];
-  };
+  canonicaljson = callPackage ../development/python-modules/canonicaljson { };
 
   daemonize = buildPythonPackage rec {
     name = "daemonize-${version}";
