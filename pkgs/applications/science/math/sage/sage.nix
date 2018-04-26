@@ -212,6 +212,7 @@ in
 stdenv.mkDerivation rec {
   version = "8.1"; # TODO
   name = "sage-${version}";
+  doc = sagedoc;
 
   inherit buildInputs pythonEnv; # FIXME
 
@@ -346,16 +347,7 @@ stdenv.mkDerivation rec {
       HOME="$sagehome" \
       SHELL="${stdenv.shell}" \
       TMP="$TMP" \
-      "$out/bin/sage" -t --nthreads "$NIX_BUILD_CORES" --timeout 0 --long \
-        /nix/store/2nlcb67zgygiivg64sqza9ybymb5j943-sage-src-8.1/src/sage/lfunctions/sympow.py \
-        /nix/store/2nlcb67zgygiivg64sqza9ybymb5j943-sage-src-8.1/src/sage/matrix/matrix_integer_dense.pyx \
-        /nix/store/2nlcb67zgygiivg64sqza9ybymb5j943-sage-src-8.1/src/sage/modular/abvar/abvar.py \
-        /nix/store/2nlcb67zgygiivg64sqza9ybymb5j943-sage-src-8.1/src/sage/modular/hecke/submodule.py \
-        /nix/store/2nlcb67zgygiivg64sqza9ybymb5j943-sage-src-8.1/src/sage/plot/histogram.py \
-        /nix/store/2nlcb67zgygiivg64sqza9ybymb5j943-sage-src-8.1/src/sage/probability/probability_distribution.pyx \
-        /nix/store/2nlcb67zgygiivg64sqza9ybymb5j943-sage-src-8.1/src/sage/schemes/elliptic_curves/ell_rational_field.py
-      # TODO
-      #"$out/bin/sage" -t --nthreads "$NIX_BUILD_CORES" --timeout 0 --only-errors --exitfirst --long --all
+      "$out/bin/sage" -t --nthreads "$NIX_BUILD_CORES" --timeout 0 --long --all
   '';
   # TODO optionally enable sagedoc tests
 }

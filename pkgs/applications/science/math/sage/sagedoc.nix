@@ -209,7 +209,7 @@ stdenv.mkDerivation rec {
   GRAPHS_DATA_DIR="${graphs}/share/graphs";
   ELLCURVE_DATA_DIR="${elliptic_curves}/share/ellcurves";
   POLYTOPE_DATA_DIR="${polytopes_db}/share/reflexive_polytopes";
-  GAP_ROOT_DIR="${gap}/share/gap/build-dir";
+  GAP_ROOT_DIR="${gap-libgap-compatible}/share/gap/build-dir";
   COMBINATORIAL_DESIGN_DIR="${combinatorial_designs}/share";
   ELLIPTIC_CURVES_DIR="${elliptic_curves}";
   JMOL_DIR="${jmol}";
