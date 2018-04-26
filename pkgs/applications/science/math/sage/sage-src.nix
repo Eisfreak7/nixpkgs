@@ -156,31 +156,31 @@ pkgs.stdenv.mkDerivation rec {
     ./patches/revert-269c1e1551285.patch
 
     # FIXME
-    # (fetchpatch {
-    #   name = "sagemath-cython-source.patch";
-    #   url = "https://github.com/sagemath/sage/commit/fccaf230.patch";
-    #   sha256 = "0jyxzghgfsp3snnpp7l2di930hafvf7zyngc87zqw58rwrz22lfy";
-    # })
-    # (fetchpatch {
-    #   name = "sagemath-cython-0.28a.patch";
-    #   url = "https://github.com/sagemath/sage/commit/348432f7.patch";
-    #   sha256 = "0g20zg0r67kvl16ycq69zm0y08918c9qx14ydkmhkq2b6wfic0ww";
-    # })
-    # (fetchpatch {
-    #   name = "sagemath-cython-0.28b.patch";
-    #   url = "https://github.com/sagemath/sage/commit/609a04de.patch";
-    #   sha256 = "06fzbsni84y8abnsm7r46fhyi8gg4m4gl8c1gxiaxxfc04r5i4mc";
-    # })
-    # (fetchpatch {
-    #   name = "sagemath-cython-0.28c.patch";
-    #   url = "https://git.archlinux.org/svntogit/community.git/plain/trunk/sagemath-cython-0.28c.patch?h=packages/sagemath&id=434435a400fa9f6078ad4e3078dceb2a1d1f7591";
-    #   sha256 = "0arqv0hp5q5061q6a5lhilms0v98f04yns33lqagbl6y2k97nrmv";
-    # })
-    # (fetchpatch {
-    #   name = "sagemath-cython-0.28d.patch";
-    #   url = "https://github.com/sagemath/sage/commit/c331d9bb.patch";
-    #   sha256 = "0shac7inz08wcqd9vmsqvigb6gw1vqdnfry6vqmxc0qsq69rjafi";
-    # })
+    (fetchpatch {
+      name = "sagemath-cython-source.patch";
+      url = "https://github.com/sagemath/sage/commit/fccaf230.patch";
+      sha256 = "0jyxzghgfsp3snnpp7l2di930hafvf7zyngc87zqw58rwrz22lfy";
+    })
+    (fetchpatch {
+      name = "sagemath-cython-0.28a.patch";
+      url = "https://github.com/sagemath/sage/commit/348432f7.patch";
+      sha256 = "0g20zg0r67kvl16ycq69zm0y08918c9qx14ydkmhkq2b6wfic0ww";
+    })
+    (fetchpatch {
+      name = "sagemath-cython-0.28b.patch";
+      url = "https://github.com/sagemath/sage/commit/609a04de.patch";
+      sha256 = "06fzbsni84y8abnsm7r46fhyi8gg4m4gl8c1gxiaxxfc04r5i4mc";
+    })
+    (fetchpatch {
+      name = "sagemath-cython-0.28c.patch";
+      url = "https://git.archlinux.org/svntogit/community.git/plain/trunk/sagemath-cython-0.28c.patch?h=packages/sagemath&id=434435a400fa9f6078ad4e3078dceb2a1d1f7591";
+      sha256 = "0arqv0hp5q5061q6a5lhilms0v98f04yns33lqagbl6y2k97nrmv";
+    })
+    (fetchpatch {
+      name = "sagemath-cython-0.28d.patch";
+      url = "https://github.com/sagemath/sage/commit/c331d9bb.patch";
+      sha256 = "0shac7inz08wcqd9vmsqvigb6gw1vqdnfry6vqmxc0qsq69rjafi";
+    })
   ];
 
   configurePhase = "true";
