@@ -346,7 +346,9 @@ stdenv.mkDerivation rec {
       HOME="$sagehome" \
       SHELL="${stdenv.shell}" \
       TMP="$TMP" \
-      "$out/bin/sage" -t --nthreads "$NIX_BUILD_CORES" --timeout 0 --long --all
+      "$out/bin/sage" -t --nthreads "$NIX_BUILD_CORES" --timeout 0 --exitfirst --all
+      # TODO
+      #"$out/bin/sage" -t --nthreads "$NIX_BUILD_CORES" --timeout 0 --only-errors --exitfirst --long --all
   '';
   # TODO optionally enable sagedoc tests
 }

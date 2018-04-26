@@ -199,6 +199,7 @@ let
   });
 in
   python.pkgs.callPackage ./sage.nix {
+    buildDoc = false;
     inherit networkx pari_data ecl pari scipy glpk gfan cvxopt sympy matplotlib palp maxima-ecl eclib;
     inherit sage-src sagelib sagedoc sagenb openblas-blas-pc openblas-cblas-pc openblas-lapack-pc pynac singular;
     three = nodePackages_8_x.three;
