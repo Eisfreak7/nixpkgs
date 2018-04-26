@@ -82,7 +82,7 @@
 , flint
 , pillow
 , pynac
-, buildDoc ? true
+, buildDoc ? false
 }:
 
 let
@@ -212,7 +212,6 @@ in
 stdenv.mkDerivation rec {
   version = "8.1"; # TODO
   name = "sage-${version}";
-  doc = sagedoc;
 
   inherit buildInputs pythonEnv; # FIXME
 
@@ -350,4 +349,6 @@ stdenv.mkDerivation rec {
       "$out/bin/sage" -t --nthreads "$NIX_BUILD_CORES" --timeout 0 --long --all
   '';
   # TODO optionally enable sagedoc tests
+} // {
+  doc = sagedoc;
 }
