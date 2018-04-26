@@ -1,34 +1,20 @@
-{ stdenv
-, fetchurl
-, fetchpatch
-, m4
-, gmp
-# don't remove any packages -- results in a ~1.3G size increase
-# see https://github.com/NixOS/nixpkgs/pull/38754 for a discussion
-, keepAllPackages ? true
-}:
+{ stdenv, fetchurl, fetchpatch, m4, gmp }:
 
 stdenv.mkDerivation rec {
   pname = "gap";
-  # https://www.gap-system.org/Releases/
-  # newer versions (4.9.0) are available, but still considered beta (https://github.com/gap-system/gap/wiki/GAP-4.9-release-notes)
   version = "4r8p10";
   pkgVer = "2018_01_15-13_02";
   name = "${pname}-${version}";
 
-  src = let
-    # 4r8p10 -> 48
-    majorminor = stdenv.lib.replaceStrings ["r"] [""] (
-      builtins.head (stdenv.lib.splitString "p" version) # 4r8p10 -> 4r8
-    );
-  in
-    fetchurl {
-    url = "https://www.gap-system.org/pub/gap/gap${majorminor}/tar.bz2/gap${version}_${pkgVer}.tar.bz2";
+  src = fetchurl {
+    # https://www.gap-system.org/Releases/
+    # newer versions (4.9.0) are available, but still considered beta (https://github.com/gap-system/gap/wiki/GAP-4.9-release-notes)
+    url = "https://www.gap-system.org/pub/gap/gap48/tar.bz2/gap${version}_${pkgVer}.tar.bz2";
     sha256 = "0wzfdjnn6sfiaizbk5c7x44rhbfayis4lf57qbqqg84c7dqlwr6f";
   };
 
   # remove all non-essential packages (which take up a lot of space)
-  preConfigure = stdenv.lib.optionalString (!keepAllPackages) ''
+  preConfigure = ''
     find pkg -type d -maxdepth 1 -mindepth 1 \
        -not -name 'GAPDoc-*' \
        -not -name 'autpgrp*' \
@@ -93,10 +79,6 @@ stdenv.mkDerivation rec {
       chrisjefferson
     ];
     platforms = platforms.all;
-    # keeping all packages increases the package size considerably, wchich
-    # is why a local build is preferable in that situation. The timeframe
-    # is reasonable and that way the binary cache doesn't get overloaded.
-    hydraPlatforms = stdenv.lib.optionals (!keepAllPackages) meta.platforms;
     license = licenses.gpl2;
     homepage = http://gap-system.org/;
   };
