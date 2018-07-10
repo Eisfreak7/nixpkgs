@@ -2,6 +2,7 @@
 , stdenv
 , buildPythonPackage
 , fetchPypi
+, fetchpatch
 , pythonOlder
 # Build dependencies
 , glibcLocales
@@ -37,6 +38,14 @@ buildPythonPackage rec {
   prePatch = stdenv.lib.optionalString stdenv.isDarwin ''
     substituteInPlace setup.py --replace "'gnureadline'" " "
   '';
+
+  patches = [
+    (fetchpatch {
+      name = "signature-use-inspect.patch";
+      url = "https://github.com/ipython/ipython/pull/11139.patch";
+      sha256 = "1r7v9clwwbskmj4y160vcj6g0vzqbvnj4y1bm2n4bskafapm42g0";
+    })
+  ];
 
   buildInputs = [ glibcLocales ];
 
