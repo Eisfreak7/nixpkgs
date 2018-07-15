@@ -86,6 +86,7 @@
   ./programs/dconf.nix
   ./programs/digitalbitbox/default.nix
   ./programs/environment.nix
+  ./programs/firejail.nix
   ./programs/fish.nix
   ./programs/freetds.nix
   ./programs/gnupg.nix
@@ -220,6 +221,7 @@
   ./services/databases/stanchion.nix
   ./services/databases/virtuoso.nix
   ./services/desktops/accountsservice.nix
+  ./services/desktops/bamf.nix
   ./services/desktops/dleyna-renderer.nix
   ./services/desktops/dleyna-server.nix
   ./services/desktops/flatpak.nix

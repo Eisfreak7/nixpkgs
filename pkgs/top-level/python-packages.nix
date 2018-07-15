@@ -195,6 +195,8 @@ in {
     inherit (pkgs) augeas;
   };
 
+  authres = callPackage ../development/python-modules/authres { };
+
   autograd = callPackage ../development/python-modules/autograd { };
 
   automat = callPackage ../development/python-modules/automat { };
@@ -332,6 +334,8 @@ in {
   pdf2image = callPackage ../development/python-modules/pdf2image { };
 
   pdfminer = callPackage ../development/python-modules/pdfminer_six { };
+
+  pdfx = callPackage ../development/python-modules/pdfx { };
 
   plantuml = callPackage ../tools/misc/plantuml { };
 
@@ -2413,22 +2417,7 @@ in {
     };
   };
 
-  events = buildPythonPackage rec {
-    name = "Events-${version}";
-    version = "0.2.1";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/E/Events/${name}.tar.gz";
-      sha256 = "0rymyfvarjdi2fdhfz2iqmp4wgd2n2sm0p2mx44c3spm7ylnqzqa";
-    };
-
-    meta = {
-      homepage = "http://events.readthedocs.org";
-      description = "Bringing the elegance of C# EventHanlder to Python";
-      license = licenses.bsd3;
-    };
-  };
-
+  events = callPackage ../development/python-modules/events { };
 
   eyeD3 = buildPythonPackage rec {
     version = "0.7.8";
@@ -6315,9 +6304,6 @@ in {
 
   guessit = callPackage ../development/python-modules/guessit { };
 
-  # used by flexget
-  guessit_2_0 = callPackage ../development/python-modules/guessit/2.0.nix { };
-
   rebulk = callPackage ../development/python-modules/rebulk { };
 
   gunicorn = callPackage ../development/python-modules/gunicorn { };
@@ -6933,33 +6919,7 @@ in {
 
   koji = callPackage ../development/python-modules/koji { };
 
-  kombu = buildPythonPackage rec {
-    name = "kombu-${version}";
-    version = "4.0.2";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/k/kombu/${name}.tar.gz";
-      sha256 = "18hiricdnbnlz6hx3hbaa4dni6npv8rbid4dhf7k02k16qm6zz6h";
-    };
-
-    # Backport fix for python-3.6 from master (see issue https://github.com/celery/kombu/issues/675)
-    # TODO remove at next update
-    patches = [ (pkgs.fetchpatch {
-      url = "https://github.com/celery/kombu/commit/dc3fceff59d79ceac3f8f11a5d697beabb4b7a7f.patch";
-      sha256 = "0s6gsihzjvmpffc7xrrcijw00r56yb74jg0sbjgng2v1324z1da9";
-      name = "don-t-modify-dict-size-while-iterating-over-it";
-    }) ];
-
-    buildInputs = with self; [ pytest case pytz ];
-
-    propagatedBuildInputs = with self; [ amqp ];
-
-    meta = {
-      description = "Messaging library for Python";
-      homepage    = "https://github.com/celery/kombu";
-      license     = licenses.bsd3;
-    };
-  };
+  kombu = callPackage ../development/python-modules/kombu { };
 
   konfig = callPackage ../development/python-modules/konfig { };
 
@@ -8281,6 +8241,8 @@ in {
     };
   };
 
+  monosat = disabledIf (!isPy3k) (pkgs.monosat.python { inherit buildPythonPackage; inherit (self) cython; });
+
   monotonic = buildPythonPackage rec {
     pname = "monotonic";
     version = "1.3";
@@ -9148,7 +9110,9 @@ in {
    cachetools_1 = callPackage ../development/python-modules/cachetools/1.nix {};
    cachetools = callPackage ../development/python-modules/cachetools {};
 
-  cmd2 = callPackage ../development/python-modules/cmd2 {};
+  cmd2_8 = callPackage ../development/python-modules/cmd2/old.nix {};
+  cmd2_9 = callPackage ../development/python-modules/cmd2 {};
+  cmd2 = if isPy27 then self.cmd2_8 else self.cmd2_9;
 
  warlock = buildPythonPackage rec {
    name = "warlock-${version}";
@@ -14773,30 +14737,7 @@ EOF
     imagemagick = pkgs.imagemagickBig;
   };
 
-  wcwidth = buildPythonPackage rec {
-    name = "wcwidth-${version}";
-    version = "0.1.6";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/w/wcwidth/${name}.tar.gz";
-      sha256 = "02wjrpf001gjdjsaxxbzcwfg19crlk2dbddayrfc2v06f53yrcyw";
-    };
-
-    # Checks fail due to missing tox.ini file:
-    doCheck = false;
-
-    meta = {
-      description = "Measures number of Terminal column cells of wide-character codes";
-      longDescription = ''
-        This API is mainly for Terminal Emulator implementors -- any Python
-        program that attempts to determine the printable width of a string on
-        a Terminal. It is implemented in python (no C library calls) and has
-        no 3rd-party dependencies.
-      '';
-      homepage = https://github.com/jquast/wcwidth;
-      license = licenses.mit;
-    };
-  };
+  wcwidth = callPackage ../development/python-modules/wcwidth { };
 
   web = buildPythonPackage rec {
     version = "0.37";

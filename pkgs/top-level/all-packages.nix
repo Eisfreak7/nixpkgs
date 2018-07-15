@@ -615,7 +615,7 @@ with pkgs;
 
   dgsh = callPackage ../shells/dgsh { };
 
-  dkimpy = pythonPackages.dkimpy;
+  dkimpy = with pythonPackages; toPythonApplication dkimpy;
 
   ecdsautils = callPackage ../tools/security/ecdsautils { };
 
@@ -847,6 +847,8 @@ with pkgs;
   blockhash = callPackage ../tools/graphics/blockhash { };
 
   bluemix-cli = callPackage ../tools/admin/bluemix-cli { };
+
+  charles = callPackage ../applications/networking/charles { };
 
   libqmatrixclient = libsForQt5.callPackage ../development/libraries/libqmatrixclient { };
 
@@ -1391,6 +1393,8 @@ with pkgs;
 
   nwipe = callPackage ../tools/security/nwipe { };
 
+  nyx = callPackage ../tools/networking/nyx { };
+
   onboard = callPackage ../applications/misc/onboard { };
 
   optar = callPackage ../tools/graphics/optar {};
@@ -1678,6 +1682,8 @@ with pkgs;
 
   ciopfs = callPackage ../tools/filesystems/ciopfs { };
 
+  circleci-cli = callPackage ../development/tools/misc/circleci-cli { };
+
   citrix_receiver = callPackage ../applications/networking/remote/citrix-receiver { };
   citrix_receiver_13_10_0 = citrix_receiver.override { version = "13.10.0"; };
   citrix_receiver_13_9_1  = citrix_receiver.override { version = "13.9.1";  };
@@ -1944,7 +1950,7 @@ with pkgs;
 
   daq = callPackage ../applications/networking/ids/daq { };
 
-  dar = callPackage ../tools/archivers/dar { };
+  dar = callPackage ../tools/backup/dar { };
 
   darkhttpd = callPackage ../servers/http/darkhttpd { };
 
@@ -2010,7 +2016,9 @@ with pkgs;
 
   djbdns = callPackage ../tools/networking/djbdns { };
 
-  dnscrypt-proxy = callPackage ../tools/networking/dnscrypt-proxy { };
+  dnscrypt-proxy = callPackage ../tools/networking/dnscrypt-proxy/1.x { };
+
+  dnscrypt-proxy2 = callPackage ../tools/networking/dnscrypt-proxy/2.x { };
 
   dnscrypt-wrapper = callPackage ../tools/networking/dnscrypt-wrapper { };
 
@@ -2107,6 +2115,8 @@ with pkgs;
   driftnet = callPackage ../tools/networking/driftnet {};
 
   drone = callPackage ../development/tools/continuous-integration/drone { };
+
+  drone-cli = callPackage ../development/tools/continuous-integration/drone-cli { };
 
   dropbear = callPackage ../tools/networking/dropbear { };
 
@@ -2861,6 +2871,8 @@ with pkgs;
 
   gtkgnutella = callPackage ../tools/networking/p2p/gtk-gnutella { };
 
+  gtkperf = callPackage ../development/tools/misc/gtkperf { };
+
   gtkvnc = callPackage ../tools/admin/gtk-vnc {};
 
   gtmess = callPackage ../applications/networking/instant-messengers/gtmess { };
@@ -3019,6 +3031,8 @@ with pkgs;
     # doesn't build with clang_37
     inherit (llvmPackages_38) stdenv;
   });
+
+  holochain-go = callPackage ../servers/holochain-go { };
 
   homesick = callPackage ../tools/misc/homesick { };
 
@@ -3515,9 +3529,6 @@ with pkgs;
 
   nodejs-8_x = callPackage ../development/web/nodejs/v8.nix {};
   nodejs-slim-8_x = callPackage ../development/web/nodejs/v8.nix { enableNpm = false; };
-
-  nodejs-9_x = callPackage ../development/web/nodejs/v9.nix {};
-  nodejs-slim-9_x = callPackage ../development/web/nodejs/v9.nix { enableNpm = false; };
 
   nodejs-10_x = callPackage ../development/web/nodejs/v10.nix {
     openssl = openssl_1_1_0;
@@ -4038,7 +4049,7 @@ with pkgs;
 
   networkmanager-iodine = callPackage ../tools/networking/network-manager/iodine.nix { };
 
-  networkmanager-openvpn = callPackage ../tools/networking/network-manager/openvpn.nix { };
+  networkmanager-openvpn = callPackage ../tools/networking/network-manager/openvpn { };
 
   networkmanager-l2tp = callPackage ../tools/networking/network-manager/l2tp.nix { };
 
@@ -4432,6 +4443,8 @@ with pkgs;
   pdf2odt = callPackage ../tools/typesetting/pdf2odt { };
 
   pdf-redact-tools = callPackage ../tools/graphics/pdfredacttools { };
+
+  pdfcrack = callPackage ../tools/security/pdfcrack { };
 
   pdf2svg = callPackage ../tools/graphics/pdf2svg { };
 
@@ -5439,6 +5452,8 @@ with pkgs;
 
   trickle = callPackage ../tools/networking/trickle {};
 
+  triggerhappy = callPackage ../tools/inputmethods/triggerhappy {};
+
   trousers = callPackage ../tools/security/trousers { };
 
   tryton = callPackage ../applications/office/tryton { };
@@ -5936,6 +5951,8 @@ with pkgs;
   xpf = callPackage ../tools/text/xml/xpf {
     libxml2 = libxml2Python;
   };
+
+  xsecurelock = callPackage ../tools/X11/xsecurelock { };
 
   xsel = callPackage ../tools/misc/xsel { };
 
@@ -6529,7 +6546,7 @@ with pkgs;
 
   haskell = callPackage ./haskell-packages.nix { };
 
-  haskellPackages = haskell.packages.ghc822.override {
+  haskellPackages = haskell.packages.ghc843.override {
     overrides = config.haskellPackageOverrides or haskell.packageOverrides;
   };
 
@@ -6571,6 +6588,10 @@ with pkgs;
   };
 
   fstar = callPackage ../development/compilers/fstar {
+    ocamlPackages = ocaml-ng.ocamlPackages_4_06;
+  };
+
+  pyre = callPackage ../development/tools/pyre {
     ocamlPackages = ocaml-ng.ocamlPackages_4_06;
   };
 
@@ -7783,15 +7804,17 @@ with pkgs;
 
   bazel_0_4 = callPackage ../development/tools/build-managers/bazel/0.4.nix { };
   bazel = callPackage ../development/tools/build-managers/bazel {
-    inherit (darwin) cctools;
     inherit (darwin.apple_sdk.frameworks) CoreFoundation CoreServices Foundation;
-    binutils = binutils-unwrapped;
   };
 
   bazel-buildtools = callPackage ../development/tools/build-managers/bazel/buildtools { };
   buildifier = bazel-buildtools;
   buildozer = bazel-buildtools;
   unused_deps = bazel-buildtools;
+
+  bazel-deps = callPackage ../development/tools/build-managers/bazel/bazel-deps {
+    buildBazelPackage = buildBazelPackage.override { enableNixHacks = false; };
+  };
 
   buildBazelPackage = callPackage ../build-support/build-bazel-package { };
 
@@ -7962,7 +7985,7 @@ with pkgs;
   creduce = callPackage ../development/tools/misc/creduce {
     inherit (perlPackages) perl
       ExporterLite FileWhich GetoptTabular RegexpCommon TermReadKey;
-    inherit (llvmPackages_4) llvm clang-unwrapped;
+    inherit (llvmPackages_6) llvm clang-unwrapped;
   };
 
   cscope = callPackage ../development/tools/misc/cscope { };
@@ -8079,8 +8102,6 @@ with pkgs;
   flow = callPackage ../development/tools/analysis/flow {
     inherit (darwin.apple_sdk.frameworks) CoreServices;
     inherit (darwin) cf-private;
-    inherit (ocamlPackages) ocaml findlib camlp4 sedlex ocamlbuild lwt_ppx
-      wtf8 dtoa;
   };
 
   foreman = callPackage ../tools/system/foreman { };
@@ -8510,6 +8531,10 @@ with pkgs;
     flex = flex_2_5_35;
   };
 
+  spoofer = callPackage ../tools/networking/spoofer { };
+
+  spoofer-gui = callPackage ../tools/networking/spoofer { withGUI = true; };
+
   sqlitebrowser = libsForQt5.callPackage ../development/tools/database/sqlitebrowser { };
 
   sselp = callPackage ../tools/X11/sselp{ };
@@ -8603,10 +8628,14 @@ with pkgs;
 
   xc3sprog = callPackage ../development/tools/misc/xc3sprog { };
 
-  xcbuild  = callPackage ../development/tools/xcbuild/wrapper.nix {
+  xcodebuild = callPackage ../development/tools/xcbuild/wrapper.nix {
     inherit (darwin.apple_sdk.frameworks) CoreServices CoreGraphics ImageIO;
     stdenv = buildPackages.clangStdenv;
   };
+  xcbuild = xcodebuild;
+  xcbuildHook = makeSetupHook {
+    deps = [ xcbuild ];
+  } ../development/tools/xcbuild/setup-hook.sh  ;
 
   xmlindent = callPackage ../development/web/xmlindent {};
 
@@ -8797,6 +8826,8 @@ with pkgs;
   };
 
   c-blosc = callPackage ../development/libraries/c-blosc { };
+
+  cachix = haskell.lib.justStaticExecutables haskellPackages.cachix;
 
   capnproto = callPackage ../development/libraries/capnproto { };
 
@@ -12918,6 +12949,8 @@ with pkgs;
 
   libpulseaudio = libpulseaudio-vanilla;
 
+  pulseeffects = callPackage ../applications/audio/pulseeffects { };
+
   tomcat_connectors = callPackage ../servers/http/apache-modules/tomcat-connectors { };
 
   pies = callPackage ../servers/pies { };
@@ -13071,6 +13104,7 @@ with pkgs;
   prometheus-surfboard-exporter = callPackage ../servers/monitoring/prometheus/surfboard-exporter.nix { };
   prometheus-unifi-exporter = callPackage ../servers/monitoring/prometheus/unifi-exporter { };
   prometheus-varnish-exporter = callPackage ../servers/monitoring/prometheus/varnish-exporter.nix { };
+  prometheus-jmx-httpserver = callPackage ../servers/monitoring/prometheus/jmx-httpserver.nix {  };
 
   psqlodbc = callPackage ../servers/sql/postgresql/psqlodbc { };
 
@@ -13690,6 +13724,11 @@ with pkgs;
       [ kernelPatches.bridge_stp_helper
         kernelPatches.cpu-cgroup-v2."4.4"
         kernelPatches.modinst_arg_list_too_long
+        # https://github.com/NixOS/nixpkgs/issues/42755
+        # Remove these xen-netfront patches once they're included in
+        # upstream! Fixes https://github.com/NixOS/nixpkgs/issues/42755
+        kernelPatches.xen-netfront_fix_mismatched_rtnl_unlock
+        kernelPatches.xen-netfront_update_features_after_registering_netdev
       ];
   };
 
@@ -13698,6 +13737,11 @@ with pkgs;
       [ kernelPatches.bridge_stp_helper
         kernelPatches.cpu-cgroup-v2."4.9"
         kernelPatches.modinst_arg_list_too_long
+        # https://github.com/NixOS/nixpkgs/issues/42755
+        # Remove these xen-netfront patches once they're included in
+        # upstream! Fixes https://github.com/NixOS/nixpkgs/issues/42755
+        kernelPatches.xen-netfront_fix_mismatched_rtnl_unlock
+        kernelPatches.xen-netfront_update_features_after_registering_netdev
       ];
   };
 
@@ -13708,6 +13752,11 @@ with pkgs;
         # when adding a new linux version
         kernelPatches.cpu-cgroup-v2."4.11"
         kernelPatches.modinst_arg_list_too_long
+        # https://github.com/NixOS/nixpkgs/issues/42755
+        # Remove these xen-netfront patches once they're included in
+        # upstream! Fixes https://github.com/NixOS/nixpkgs/issues/42755
+        kernelPatches.xen-netfront_fix_mismatched_rtnl_unlock
+        kernelPatches.xen-netfront_update_features_after_registering_netdev
       ];
   };
 
@@ -13719,6 +13768,11 @@ with pkgs;
         # kernelPatches.cpu-cgroup-v2."4.11"
         kernelPatches.modinst_arg_list_too_long
         kernelPatches.bcm2835_mmal_v4l2_camera_driver # Only needed for 4.16!
+        # https://github.com/NixOS/nixpkgs/issues/42755
+        # Remove these xen-netfront patches once they're included in
+        # upstream! Fixes https://github.com/NixOS/nixpkgs/issues/42755
+        kernelPatches.xen-netfront_fix_mismatched_rtnl_unlock
+        kernelPatches.xen-netfront_update_features_after_registering_netdev
       ];
   };
 
@@ -14249,6 +14303,8 @@ with pkgs;
   radeontop = callPackage ../os-specific/linux/radeontop { };
 
   raspberrypifw = callPackage ../os-specific/linux/firmware/raspberrypi {};
+  raspberrypiWirelessFirmware = callPackage ../os-specific/linux/firmware/raspberrypi-wireless { };
+
   raspberrypi-tools = callPackage ../os-specific/linux/firmware/raspberrypi/tools.nix {};
 
   regionset = callPackage ../os-specific/linux/regionset { };
@@ -14660,6 +14716,8 @@ with pkgs;
 
   helvetica-neue-lt-std = callPackage ../data/fonts/helvetica-neue-lt-std { };
 
+  hetzner-kube = callPackage ../applications/networking/cluster/hetzner-kube { };
+
   hicolor-icon-theme = callPackage ../data/icons/hicolor-icon-theme { };
 
   hanazono = callPackage ../data/fonts/hanazono { };
@@ -14935,6 +14993,8 @@ with pkgs;
   terminus_font = callPackage ../data/fonts/terminus-font { };
 
   terminus_font_ttf = callPackage ../data/fonts/terminus-font-ttf { };
+
+  termtekst = callPackage ../misc/emulators/termtekst { };
 
   tex-gyre = callPackages ../data/fonts/tex-gyre { };
 
@@ -15339,8 +15399,6 @@ with pkgs;
   catfish = callPackage ../applications/search/catfish { };
 
   cava = callPackage ../applications/audio/cava { };
-
-  cask = callPackage ../development/tools/build-managers/cask { };
 
   cb2bib = libsForQt5.callPackage ../applications/office/cb2bib { };
 
@@ -16557,6 +16615,8 @@ with pkgs;
 
   spectrwm = callPackage ../applications/window-managers/spectrwm { };
 
+  super-productivity = callPackage ../applications/networking/super-productivity { };
+
   wlc = callPackage ../development/libraries/wlc { };
   wlroots = callPackage ../development/libraries/wlroots { };
   rootston = wlroots.bin;
@@ -16777,6 +16837,8 @@ with pkgs;
   };
 
   k9copy = libsForQt5.callPackage ../applications/video/k9copy {};
+
+  kail = callPackage ../tools/networking/kail {  };
 
   kanboard = callPackage ../applications/misc/kanboard { };
 
@@ -18824,6 +18886,10 @@ with pkgs;
     freerdp = freerdp_legacy;
   };
 
+  whitebox-tools = callPackage ../applications/gis/whitebox-tools {
+    inherit (darwin.apple_sdk.frameworks) Security;
+  };
+
   windowlab = callPackage ../applications/window-managers/windowlab { };
 
   windowmaker = callPackage ../applications/window-managers/windowmaker { };
@@ -19147,6 +19213,8 @@ with pkgs;
   xrestop = callPackage ../tools/X11/xrestop { };
 
   xsd = callPackage ../development/libraries/xsd { };
+
+  xscope = callPackage ../applications/misc/xscope { };
 
   xscreensaver = callPackage ../misc/screensavers/xscreensaver {
     inherit (gnome2) libglade;
@@ -19540,6 +19608,8 @@ with pkgs;
 
   holdingnuts = callPackage ../games/holdingnuts { };
 
+  hyperrogue = callPackage ../games/hyperrogue { };
+
   icbm3d = callPackage ../games/icbm3d { };
 
   ingen = callPackage ../applications/audio/ingen {
@@ -19660,7 +19730,7 @@ with pkgs;
 
   openxcom = callPackage ../games/openxcom { };
 
-  orthorobot = callPackage ../games/orthorobot { love = love_0_7; };
+  orthorobot = callPackage ../games/orthorobot { };
 
   pacvim = callPackage ../games/pacvim { };
 
@@ -20261,6 +20331,8 @@ with pkgs;
 
   minimap2 = callPackage ../applications/science/biology/minimap2 { };
 
+  mosdepth = callPackage ../applications/science/biology/mosdepth { };
+
   ncbi_tools = callPackage ../applications/science/biology/ncbi-tools { };
 
   paml = callPackage ../applications/science/biology/paml { };
@@ -20571,6 +20643,8 @@ with pkgs;
 
   minisat = callPackage ../applications/science/logic/minisat {};
   minisatUnstable = callPackage ../applications/science/logic/minisat/unstable.nix {};
+
+  monosat = callPackage ../applications/science/logic/monosat {};
 
   opensmt = callPackage ../applications/science/logic/opensmt { };
 
@@ -21068,6 +21142,8 @@ with pkgs;
     cupsSupport = true;
     x11Support = true;
   });
+
+  glava = callPackage ../applications/misc/glava {};
 
   gnome-breeze = callPackage ../misc/themes/gnome-breeze { };
 
