@@ -3,21 +3,19 @@
 , fetchpatch
 }:
 stdenv.mkDerivation rec {
-  version = "8.3.rc0";
+  version = "8.3.rc1";
   name = "sage-src-${version}";
 
   src = fetchFromGitHub {
     owner = "sagemath";
     repo = "sage";
     rev = version;
-    sha256 = "103sm8ans43g4vm1jspbib88zy1cj3pyn5asvhmirblqbzkhkrb6";
+    sha256 = "1pp7xys4i2maxmmgq22rrfwm0fnnfabczl55xf722wy9cbwif0qi";
   };
 
   nixPatches = [
     # https://trac.sagemath.org/ticket/25809
     ./patches/spkg-scripts.patch
-
-    ./patches/mandelbrot-order.patch # FIXME upstream
 
     # https://trac.sagemath.org/ticket/25309
     (fetchpatch {
