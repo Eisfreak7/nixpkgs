@@ -205,6 +205,8 @@ in {
 
   aws-xray-sdk = callPackage ../development/python-modules/aws-xray-sdk { };
 
+  aws-adfs = callPackage ../development/python-modules/aws-adfs { };
+
   # packages defined elsewhere
 
   amazon_kclpy = callPackage ../development/python-modules/amazon_kclpy { };
@@ -14565,6 +14567,8 @@ in {
       license = licenses.mit;
     };
   };
+
+  vega_datasets = callPackage ../development/python-modules/vega_datasets { };
 
   virtkey = callPackage ../development/python-modules/virtkey { };
 

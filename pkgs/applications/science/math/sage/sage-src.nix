@@ -96,6 +96,9 @@ stdenv.mkDerivation rec {
     # Only formatting changes.
     # https://trac.sagemath.org/ticket/25260
     ./patches/numpy-1.14.3.patch
+
+    # https://trac.sagemath.org/ticket/25862
+    ./patches/eclib-20180710.patch
   ];
 
   patches = nixPatches ++ packageUpgradePatches;
