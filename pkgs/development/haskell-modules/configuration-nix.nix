@@ -421,16 +421,6 @@ self: super: builtins.intersectAttrs super {
   # so disable this on Darwin only
   ${if pkgs.stdenv.isDarwin then null else "GLUT"} = addPkgconfigDepend (appendPatch super.GLUT ./patches/GLUT.patch) pkgs.freeglut;
 
-  idris = overrideCabal super.idris (drv: {
-    # https://github.com/idris-lang/Idris-dev/issues/2499
-    librarySystemDepends = (drv.librarySystemDepends or []) ++ [pkgs.gmp];
-
-    # tests and build run executable, so need to set LD_LIBRARY_PATH
-    preBuild = ''
-      export LD_LIBRARY_PATH="$PWD/dist/build:$LD_LIBRARY_PATH"
-    '';
-  });
-
   libsystemd-journal = overrideCabal super.libsystemd-journal (old: {
     librarySystemDepends = old.librarySystemDepends or [] ++ [ pkgs.systemd ];
   });
@@ -452,7 +442,7 @@ self: super: builtins.intersectAttrs super {
     then addBuildDepend (dontCheck super.fsnotify) pkgs.darwin.apple_sdk.frameworks.Cocoa
     else dontCheck super.fsnotify;
 
-  hidapi = addExtraLibrary super.hidapi pkgs.libudev;
+  hidapi = addExtraLibrary super.hidapi pkgs.udev;
 
   hs-GeoIP = super.hs-GeoIP.override { GeoIP = pkgs.geoipWithDatabase; };
 
@@ -481,6 +471,9 @@ self: super: builtins.intersectAttrs super {
     '';
   });
 
+  # https://github.com/plow-technologies/servant-streaming/issues/12
+  servant-streaming-server = dontCheck super.servant-streaming-server;
+
   # tests run executable, relying on PATH
   # without this, tests fail with "Couldn't launch intero process"
   intero = overrideCabal super.intero (drv: {
@@ -504,7 +497,7 @@ self: super: builtins.intersectAttrs super {
   # Break cyclic reference that results in an infinite recursion.
   partial-semigroup = dontCheck super.partial-semigroup;
   colour = dontCheck super.colour;
-  manifolds = super.manifolds.override { spatial-rotations = dontCheck self.spatial-rotations; };
+  spatial-rotations = dontCheck super.spatial-rotations;
 
   LDAP = dontCheck (overrideCabal super.LDAP (drv: {
     librarySystemDepends = drv.librarySystemDepends or [] ++ [ pkgs.cyrus_sasl.dev ];

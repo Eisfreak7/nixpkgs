@@ -3,9 +3,9 @@
 
 # build-tools
 , bootPkgs, alex, happy, hscolour
-, autoconf, automake, coreutils, fetchurl, fetchpatch, perl, python3, m4
+, autoconf, automake, coreutils, fetchurl, perl, python3, m4
 
-, libffi, libiconv ? null, ncurses
+, libiconv ? null, ncurses
 
 , useLLVM ? !targetPlatform.isx86 || (targetPlatform.isMusl && hostPlatform != targetPlatform)
 , # LLVM is conceptually a run-time-only depedendency, but for
@@ -76,12 +76,12 @@ let
 
 in
 stdenv.mkDerivation (rec {
-  version = "8.6.0.20180627";
+  version = "8.6.0.20180714";
   name = "${targetPrefix}ghc-${version}";
 
   src = fetchurl {
-    url = "https://downloads.haskell.org/~ghc/8.6.1-alpha1/ghc-${version}-src.tar.xz";
-    sha256 = "0vmki10ypdhca3nykxz3lgarr14mfanfkif43m1s2p1q0b1z576n";
+    url = "https://downloads.haskell.org/~ghc/8.6.1-alpha2/ghc-${version}-src.tar.xz";
+    sha256 = "1jrkqrqdv2z9i9s1xaxhci34c9rjvlgr40y34bxsfj0hj1r28409";
   };
 
   enableParallelBuilding = true;

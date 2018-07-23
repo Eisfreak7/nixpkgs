@@ -93,6 +93,11 @@
     github = "adolfogc";
     name = "Adolfo E. García Castro";
   };
+  aepsil0n = {
+    email = "eduard.bopp@aepsil0n.de";
+    github = "aepsil0n";
+    name = "Eduard Bopp";
+  };
   aespinosa = {
     email = "allan.espinosa@outlook.com";
     github = "aespinosa";
@@ -4414,6 +4419,11 @@
   zef = {
     email = "zef@zef.me";
     name = "Zef Hemel";
+  };
+  zgrannan = {
+    email = "zgrannan@gmail.com";
+    github = "zgrannan";
+    name = "Zack Grannan";
   };
   zimbatm = {
     email = "zimbatm@zimbatm.com";

@@ -1,9 +1,9 @@
-{ stdenv, fetchurl, fetchFromGitHub, fetchpatch, makeWrapper
+{ stdenv, fetchurl, fetchFromGitHub, makeWrapper
 , docutils, perl, pkgconfig, python3, which, ffmpeg_4
 , freefont_ttf, freetype, libass, libpthreadstubs
 , lua, luasocket, libuchardet, libiconv ? null, darwin
 
-, x11Support ? true,
+, x11Support ? stdenv.isLinux,
     libGLU_combined       ? null,
     libX11     ? null,
     libXext    ? null,
@@ -38,9 +38,6 @@
 , vapoursynthSupport ? false, vapoursynth   ? null
 , archiveSupport     ? false, libarchive    ? null
 , jackaudioSupport   ? false, libjack2      ? null
-
-# scripts you want to be loaded by default
-, scripts ? []
 }:
 
 with stdenv.lib;
@@ -98,7 +95,8 @@ in stdenv.mkDerivation rec {
     patchShebangs ./TOOLS/
   '';
 
-  NIX_LDFLAGS = optionalString x11Support "-lX11 -lXext";
+  NIX_LDFLAGS = optionalString x11Support "-lX11 -lXext "
+              + optionalString stdenv.isDarwin "-framework CoreFoundation";
 
   configureFlags = [
     "--enable-libmpv-shared"
@@ -155,7 +153,7 @@ in stdenv.mkDerivation rec {
     ++ optionals x11Support        [ libX11 libXext libGLU_combined libXxf86vm libXrandr ]
     ++ optionals waylandSupport    [ wayland wayland-protocols libxkbcommon ]
     ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-      libiconv Cocoa CoreAudio
+      CoreFoundation libiconv Cocoa CoreAudio
     ]);
 
   enableParallelBuilding = true;
@@ -179,7 +177,6 @@ in stdenv.mkDerivation rec {
     ln -s ${freefont_ttf}/share/fonts/truetype/FreeSans.ttf $out/share/mpv/subfont.ttf
     # Ensure youtube-dl is available in $PATH for MPV
     wrapProgram $out/bin/mpv \
-      --add-flags "--scripts=${concatStringsSep "," scripts}" \
       --prefix LUA_PATH : "${luaPath}" \
       --prefix LUA_CPATH : "${luaCPath}" \
   '' + optionalString youtubeSupport ''
