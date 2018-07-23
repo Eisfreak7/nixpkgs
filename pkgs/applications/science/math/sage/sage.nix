@@ -1,6 +1,7 @@
 { stdenv
 , sage-with-env
 , makeWrapper
+, sage-src
 }:
 
 stdenv.mkDerivation rec {

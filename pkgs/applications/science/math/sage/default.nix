@@ -58,7 +58,7 @@ let
         three = nodePackages_8_x.three;
       };
 
-      sage = self.callPackage ./sage.nix { };
+      sage = self.callPackage ./sage.nix { inherit sage-src; };
 
       sage-wrapper = self.callPackage ./sage-wrapper.nix {
         inherit sage-src withDoc;

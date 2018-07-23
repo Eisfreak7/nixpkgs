@@ -1,82 +1,86 @@
 { stdenv
-, fetchurl
-, fetchpatch
+, fetchFromGitLab
 , makeWrapper
+, which
+, autoconf
+, help2man
+, file
+, pari
 }:
 
 stdenv.mkDerivation rec {
-  version = "1.018.1";
+  version = "2.023.2";
   name = "sympow-${version}";
 
-  src = fetchurl {
-    # Original website no longer reachable
-    url = "mirror://sageupstream/sympow/sympow-${version}.tar.bz2";
-    sha256 = "0hphs7ia1wr5mydf288zvwj4svrymfpadcg3pi6w80km2yg5bm3c";
+  # src = fetchurl {
+  #   url = "https://gitlab.com/rezozer/forks/sympow/-/archive/v${version}/sympow-v${version}.tar.gz";
+  #   sha256 = "04xi65141s7n1khppy8v4v9lryf7ccmsra4shw5w90pzj6c0aaap";
+  # };
+
+  src = fetchFromGitLab {
+    owner = "rezozer/forks";
+    repo = "sympow";
+    rev = "v${version}";
+    sha256 = "1askzb9lv79ci13xzamr38fq49bp6wam4fwspmjdplh4hdx4ybah";
   };
+
+  postUnpack = ''
+    patchShebangs .
+  '';
 
   nativeBuildInputs = [
     makeWrapper
+    which
+    autoconf
+    help2man
+    file
+    pari
   ];
 
+  # installFlags = [
+  #   "DESTDIR=$(out)"
+  # ];
   configurePhase = ''
     runHook preConfigure
+    export PREFIX="$out"
+    export VARPREFIX="/tmp"
+    mkdir -p "$VARPREFIX/cache/sympow/datafiles/le64"
     ./Configure # doesn't take any options
     runHook postConfigure
   '';
 
-  installPhase = ''
-    runHook preInstall
-    install -D datafiles/* --target-directory "$out/share/sympow/datafiles/"
-    install *.gp "$out/share/sympow/"
-    install -Dm755 sympow "$out/share/sympow/sympow"
-    install -D new_data "$out/bin/new_data"
-
-    makeWrapper "$out/share/sympow/sympow" "$out/bin/sympow" \
-      --run 'export SYMPOW_LOCAL="$HOME/.local/share/sympow"' \
-      --run 'if [ ! -d "$SYMPOW_LOCAL" ]; then
-        mkdir -p "$SYMPOW_LOCAL"
-        cp -r @out@/share/sympow/* "$SYMPOW_LOCAL"
-        chmod -R +xw "$SYMPOW_LOCAL"
-    fi' \
-      --run 'cd "$SYMPOW_LOCAL"'
-    substituteInPlace $out/bin/sympow --subst-var out
-
-    runHook postInstall
+  postInstall = ''
+    rm -rf $out/share/sympow/datafiles
+    #mkdir -p "$out/bin"
+    #for data in 1d0 2 2d0h 3d0 3d1 4; do
+    #  "$out/bin/sympow" -new_data "$data"
+    #done
   '';
 
-  patches = [
-    # don't hardcode paths
-    (fetchpatch {
-      name = "do_not_hardcode_paths.patch";
-      url = "https://git.sagemath.org/sage.git/plain/build/pkgs/sympow/patches/Configure.patch?id=07d6c37d18811e2b377a9689790a7c5e24da16ba";
-      sha256 = "1611p8ra8zkxvmxn3gm2l64bd4ma4m6r4vd6vwswcic91k1fci04";
-    })
+  # some tests taken from the README
+  # FIXME
+  installCheck = ''
+    "$out/bin/sympow" -sp 2p16 -curve "[1,2,3,4,5]"
+  '';
+  # installPhase = ''
+  #   runHook preInstall
+  #   install -D datafiles/* --target-directory "$out/share/sympow/datafiles/"
+  #   install *.gp "$out/share/sympow/"
+  #   install -Dm755 sympow "$out/share/sympow/sympow"
+  #   install -D new_data "$out/bin/new_data"
 
-    # bug on some platforms in combination with a newer gcc:
-    # https://trac.sagemath.org/ticket/11920
-    (fetchpatch {
-      name = "fix_newer_gcc1.patch";
-      url = "https://git.sagemath.org/sage.git/plain/build/pkgs/sympow/patches/fpu.patch?id=07d6c37d18811e2b377a9689790a7c5e24da16ba";
-      sha256 = "14gfa56w3ddfmd4d5ir9a40y2zi43cj1i4d2l2ij9l0qlqdy9jyx";
-    })
-    (fetchpatch {
-      name = "fix_newer_gcc2.patch";
-      url = "https://git.sagemath.org/sage.git/plain/build/pkgs/sympow/patches/execlp.patch?id=07d6c37d18811e2b377a9689790a7c5e24da16ba";
-      sha256 = "190gqhgz9wgw4lqwz0nwb1izc9zffx34bazsiw2a2sz94bmgb54v";
-    })
+  #   makeWrapper "$out/share/sympow/sympow" "$out/bin/sympow" \
+  #     --run 'export SYMPOW_LOCAL="$HOME/.local/share/sympow"' \
+  #     --run 'if [ ! -d "$SYMPOW_LOCAL" ]; then
+  #       mkdir -p "$SYMPOW_LOCAL"
+  #       cp -r @out@/share/sympow/* "$SYMPOW_LOCAL"
+  #       chmod -R +xw "$SYMPOW_LOCAL"
+  #   fi' \
+  #     --run 'cd "$SYMPOW_LOCAL"'
+  #   substituteInPlace $out/bin/sympow --subst-var out
 
-    # fix pointer initialization bug (https://trac.sagemath.org/ticket/22862)
-    (fetchpatch {
-      name = "fix_pointer_initialization1.patch";
-      url = "https://git.sagemath.org/sage.git/plain/build/pkgs/sympow/patches/initialize-tacks.patch?id=07d6c37d18811e2b377a9689790a7c5e24da16ba";
-      sha256 = "02341vdbbidfs39s26vi4n5wigz619sw8fdbl0h9qsmwwhscgf85";
-    })
-    (fetchpatch {
-      name = "fix_pointer_initialization2.patch";
-      url = "https://git.archlinux.org/svntogit/community.git/plain/trunk/sympow-datafiles.patch?h=packages/sympow";
-      sha256 = "1m0vz048layb47r1jjf7fplw650ccc9x0w3l322iqmppzmv3022a";
-    })
-  ];
+  #   runHook postInstall
+  # '';
 
   meta = with stdenv.lib; {
     description = "A package to compute special values of symmetric power elliptic curve L-functions";

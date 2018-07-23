@@ -6,12 +6,13 @@ stdenv.mkDerivation rec {
   version = "8.2";
   name = "sage-src-${version}";
 
-  src = fetchFromGitHub {
-    owner = "sagemath";
-    repo = "sage";
-    rev = version;
-    sha256 = "0d7vc16s7dj23an2cb8v5bhbnc6nsw20qhnnxr0xh8qg629027b8";
-  };
+  # src = fetchFromGitHub {
+  #   owner = "sagemath";
+  #   repo = "sage";
+  #   rev = version;
+  #   sha256 = "0d7vc16s7dj23an2cb8v5bhbnc6nsw20qhnnxr0xh8qg629027b8";
+  # };
+  src = /home/timo/sage;
 
   nixPatches = [
     # https://trac.sagemath.org/ticket/25309
@@ -184,6 +185,19 @@ stdenv.mkDerivation rec {
 
     # https://trac.sagemath.org/ticket/25862
     ./patches/eclib-20180710.patch
+
+    # (fetchpatch {
+    #   name = "debian-sympow-1.patch";
+    #   url = "https://salsa.debian.org/science-team/sagemath/raw/master/debian/patches/u1-workaround-sympow-malloc-perturb.patch";
+    #   sha256 = "1smbiipyfpwglzj1kxfq4fcn8jlm8z55z08yhwzpn9q7fdjm7amn";
+    #   stripLen = 1;
+    # })
+    # (fetchpatch {
+    #   name = "debian-sympow-2.patch";
+    #   url = "https://salsa.debian.org/science-team/sagemath/raw/master/debian/patches/u2-fix-sympow-cachedir.patch";
+    #   sha256 = "0lh6m7w1b4gwpy6vj5hc3bisnbydr0jr9g4yjnrsdrkhfg6rcndh";
+    #   stripLen = 1;
+    # })
   ];
 
   patches = nixPatches ++ packageUpgradePatches;
