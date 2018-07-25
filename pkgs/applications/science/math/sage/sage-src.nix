@@ -99,6 +99,9 @@ stdenv.mkDerivation rec {
 
     # https://trac.sagemath.org/ticket/25862
     ./patches/eclib-20180710.patch
+
+    # https://trac.sagemath.org/ticket/24735
+    ./patches/singular-4.1.1p2.patch
   ];
 
   patches = nixPatches ++ packageUpgradePatches;
