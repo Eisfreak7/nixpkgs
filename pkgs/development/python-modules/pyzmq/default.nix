@@ -2,22 +2,22 @@
 , fetchPypi
 , pytest
 , tornado
-, zeromq3
+, zeromq
 , py
 , python
 }:
 
 buildPythonPackage rec {
   pname = "pyzmq";
-  version = "17.0.0";
+  version = "17.1.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "0145ae59139b41f65e047a3a9ed11bbc36e37d5e96c64382fcdff911c4d8c3f0";
+    sha256 = "1r6yp4hak0cna524jzc89j5710370f5m3c1qabn6mqihl99zg691";
   };
 
   checkInputs = [  pytest tornado ];
-  buildInputs = [ zeromq3];
+  buildInputs = [ zeromq ];
   propagatedBuildInputs = [ py ];
 
   # test_socket.py seems to be hanging
