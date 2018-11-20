@@ -1,0 +1,40 @@
+From c632045bd0d78e4720c06be89759bf7efe6ea6ab Mon Sep 17 00:00:00 2001
+From: Timo Kaufmann <timokau@zoho.com>
+Date: Fri, 5 Oct 2018 12:05:32 +0200
+Subject: [PATCH 2/2] Debug
+
+---
+ src/envir/Makefile | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/envir/Makefile b/src/envir/Makefile
+index 4ef4402..4a43fca 100644
+--- a/src/envir/Makefile
++++ b/src/envir/Makefile
+@@ -100,17 +100,17 @@ else
+ # statically linked library (on all platforms)
+ $O/%$(A_LIB_SUFFIX) : $(OBJS)
+ 	@mkdir -p $O
+-	@echo Creating static library: $@
+-	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+-	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
++	@echo Creating static library1: $@
++	@echo $(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
++	@echo $(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+ endif
+ 
+ # Build a static lib that contains the main() function used with executable or dynamically linked models
+ $O/$(MAINLIBNAME)$(A_LIB_SUFFIX) : $O/main.o
+ 	@mkdir -p $O
+-	@echo Creating static library: $@
+-	$(Q)$(AR) $(ARFLAG_OUT)$O/$(MAINLIBNAME)$(A_LIB_SUFFIX) $O/main.o
+-	$(Q)$(RANLIB) $O/$(MAINLIBNAME)$(A_LIB_SUFFIX)
++	@echo Creating static library2: $@
++	@echo $(Q)$(AR) $(ARFLAG_OUT)$O/$(MAINLIBNAME)$(A_LIB_SUFFIX) $O/main.o
++	@echo $(Q)$(RANLIB) $O/$(MAINLIBNAME)$(A_LIB_SUFFIX)
+ 
+ # build opp_run executable
+ 
+-- 
+2.18.0
+

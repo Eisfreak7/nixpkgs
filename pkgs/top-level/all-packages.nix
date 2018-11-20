@@ -950,6 +950,10 @@ with pkgs;
 
   libqmatrixclient = libsForQt5.callPackage ../development/libraries/libqmatrixclient { };
 
+  omnetpp = callPackage ../applications/networking/omnetpp { };
+
+  sumo = callPackage ../applications/networking/sumo { };
+
   quaternion = libsForQt5.callPackage ../applications/networking/instant-messengers/quaternion { };
 
   tensor = libsForQt5.callPackage ../applications/networking/instant-messengers/tensor { };

@@ -1,0 +1,27 @@
+From 3f9d327dbdb2b45563317df3350fc93fe7a66ed6 Mon Sep 17 00:00:00 2001
+From: Timo Kaufmann <timokau@zoho.com>
+Date: Fri, 5 Oct 2018 11:37:23 +0200
+Subject: [PATCH 1/2] Don't check for perl in a specific location
+
+---
+ configure.in | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/configure.in b/configure.in
+index d05da25..54f66dc 100644
+--- a/configure.in
++++ b/configure.in
+@@ -697,10 +697,6 @@ if test "$PERL" = "not found"; then
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
+    AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_makemake and some other programs.)
+ fi
+-if test ! -x /usr/bin/perl; then
+-   this_perl=`which perl`
+-   AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl)
+-fi
+ 
+ # swig is used for building the ui support libs
+ AC_ARG_VAR(SWIG, The Swig interface generator)
+-- 
+2.18.0
+
