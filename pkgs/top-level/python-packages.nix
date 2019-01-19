@@ -4014,6 +4014,8 @@ in {
 
   sphinx = callPackage ../development/python-modules/sphinx { };
 
+  sphinxcontrib-autoprogram = callPackage ../development/python-modules/sphinxcontrib-autoprogram { };
+
   sphinxcontrib-websupport = callPackage ../development/python-modules/sphinxcontrib-websupport { };
 
   hieroglyph = callPackage ../development/python-modules/hieroglyph { };
