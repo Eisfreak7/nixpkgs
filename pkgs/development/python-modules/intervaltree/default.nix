@@ -2,12 +2,12 @@
 , python, pytest, sortedcontainers }:
 
 buildPythonPackage rec {
-  version = "3.0.2";
+  version = "2.1.0";
   pname = "intervaltree";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "0wz234g6irlm4hivs2qzmnywk0ss06ckagwh15nflkyb3p462kyb";
+    sha256 = "02w191m9zxkcjqr1kv2slxvhymwhj3jnsyy3a28b837pi15q19dc";
   };
 
   buildInputs = [ pytest ];
