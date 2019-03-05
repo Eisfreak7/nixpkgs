@@ -167,10 +167,10 @@ stdenv.mkDerivation rec {
       ${installExtraFiles face}
     '');
 
-  postConfigure = ''
-    [ -e modules/core/version_string.inc ]
-    echo '"(build info elided)"' > modules/core/version_string.inc
-  '';
+  # postConfigure = ''
+  #   [ -e modules/core/version_string.inc ]
+  #   echo '"(build info elided)"' > modules/core/version_string.inc
+  # '';
 
   buildInputs =
        [ zlib pcre hdf5 glog boost google-gflags ]
@@ -213,7 +213,8 @@ stdenv.mkDerivation rec {
   OpenBLAS_HOME = lib.optionalString enableOpenblas openblas;
 
   cmakeFlags = [
-    "-DWITH_OPENMP=ON"
+    "-DWITH_OPENMP=OFF"
+    "-DWITH_OPENCL=OFF"
     "-DBUILD_PROTOBUF=${printEnabled (!useSystemProtobuf)}"
     "-DPROTOBUF_UPDATE_FILES=${printEnabled useSystemProtobuf}"
     "-DOPENCV_ENABLE_NONFREE=${printEnabled enableUnfree}"
