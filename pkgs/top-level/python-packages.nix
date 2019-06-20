@@ -5362,11 +5362,12 @@ in {
   tensorflow =
     if stdenv.isDarwin
     then callPackage ../development/python-modules/tensorflow/bin.nix { }
-    else callPackage ../development/python-modules/tensorflow/bin.nix rec {
+    else callPackage ../development/python-modules/tensorflow rec {
       cudaSupport = pkgs.config.cudaSupport or false;
       inherit (pkgs.linuxPackages) nvidia_x11;
       cudatoolkit = pkgs.cudatoolkit_10_0;
       cudnn = pkgs.cudnn_cudatoolkit_10_0;
+      protobuf_cc = pkgs.protobuf; # not the python version
     };
 
   tensorflowWithoutCuda = self.tensorflow.override {

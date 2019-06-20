@@ -1,8 +1,36 @@
 { stdenv, buildBazelPackage, lib, fetchFromGitHub, fetchpatch, symlinkJoin
+, git
 , buildPythonPackage, isPy3k, pythonOlder, pythonAtLeast
-, which, swig, binutils, glibcLocales
+, which, binutils, glibcLocales
 , python, jemalloc, openmpi
-, numpy, six, protobuf, tensorflow-tensorboard, backports_weakref, mock, enum34, absl-py
+, numpy, tensorflow-tensorboard, backports_weakref, mock, enum34, absl-py
+, keras-preprocessing
+, keras-applications
+, astor
+, gast
+, termcolor
+, cython
+, flatbuffers
+, giflib
+, libjpeg
+, grpc
+, grpcio
+, hwloc
+, icu
+, jsoncpp
+, lmdb
+, nasm
+, sqlite
+, pcre
+, libpng
+, six
+, snappy
+, swig
+, wrapt
+, zlib
+, protobuf
+, protobuf_cc
+, curl
 , cudaSupport ? false, nvidia_x11 ? null, cudatoolkit ? null, cudnn ? null
 # XLA without CUDA is broken
 , xlaSupport ? cudaSupport
@@ -13,6 +41,9 @@
 , fmaSupport   ? builtins.elem (stdenv.hostPlatform.platform.gcc.arch or "default") [                                     "haswell" "broadwell" "skylake" "skylake-avx512"]
 }:
 
+# TODO https://docs.bazel.build/versions/master/skylark/performance.html#profile-and-analyze-profile
+# TODO disable sandbox? https://github.com/bazelbuild/bazel/blob/acaca5a9e221088112d4abc6c2b6917e55583e47/src/test/shell/integration/sandboxfs_test.sh#L23
+
 assert cudaSupport -> nvidia_x11 != null
                    && cudatoolkit != null
                    && cudnn != null;
@@ -21,7 +52,6 @@ assert cudaSupport -> nvidia_x11 != null
 assert ! (stdenv.isDarwin && cudaSupport);
 
 let
-
   withTensorboard = pythonOlder "3.6";
 
   cudatoolkit_joined = symlinkJoin {
@@ -31,7 +61,7 @@ let
 
   tfFeature = x: if x then "1" else "0";
 
-  version = "1.5.0";
+  version = "1.14";
 
   pkg = buildBazelPackage rec {
     name = "tensorflow-build-${version}";
@@ -39,29 +69,103 @@ let
     src = fetchFromGitHub {
       owner = "tensorflow";
       repo = "tensorflow";
-      rev = "v${version}";
-      sha256 = "1c4djsaip901nasm7a6dsimr02bsv70a7b1g0kysb4n39qpdh22q";
+      rev = "r1.14";
+      sha256 = "06jvwlsm14b8rqwd8q8796r0vmn0wk64s4ps2zg0sapkmp9vvcmi";
     };
 
     patches = [
-      # Fix build with Bazel >= 0.10
-      (fetchpatch {
-        url = "https://github.com/tensorflow/tensorflow/commit/6fcfab770c2672e2250e0f5686b9545d99eb7b2b.patch";
-        sha256 = "0p61za1mx3a7gj1s5lsps16fcw18iwnvq2b46v1kyqfgq77a12vb";
-      })
-      (fetchpatch {
-        url = "https://github.com/tensorflow/tensorflow/commit/3f57956725b553d196974c9ad31badeb3eabf8bb.patch";
-        sha256 = "11dja5gqy0qw27sc9b6yw9r0lfk8dznb32vrqqfcnypk2qmv26va";
-      })
+      # Work around https://github.com/tensorflow/tensorflow/issues/24752
+      ./no-saved-proto.patch
     ];
 
     nativeBuildInputs = [ swig which ];
 
-    buildInputs = [ python jemalloc openmpi glibcLocales numpy ]
+    buildInputs = [
+      python jemalloc openmpi glibcLocales
+      git
+      # python deps needed during wheel build time
+      numpy
+      keras-preprocessing
+      # libs taken from system through the TF_SYS_LIBS mechanism
+      absl-py
+      astor
+      cython
+      flatbuffers
+      gast
+      giflib
+      libjpeg
+      grpc
+      grpcio
+      hwloc
+      icu
+      jsoncpp
+      keras-applications
+      lmdb
+      nasm
+      sqlite
+      pcre
+      libpng
+      six
+      snappy
+      swig
+      termcolor
+      wrapt
+      zlib
+      protobuf
+      protobuf_cc
+      curl
+    ]
       ++ lib.optionals cudaSupport [ cudatoolkit cudnn nvidia_x11 ];
+
+    # Take as many libraries from the system as possible. Keep in sync with
+    # list of valid syslibs in
+    # https://github.com/perfinion/tensorflow/blob/master/third_party/systemlibs/syslibs_configure.bzl
+    SYSLIBS= [
+      "absl_py"
+      "astor_archive"
+      "boringssl"
+      "com_github_googleapis_googleapis"
+      "com_github_googlecloudplatform_google_cloud_cpp"
+      "com_google_protobuf"
+      "com_google_protobuf_cc"
+      "com_googlesource_code_re2"
+      "curl"
+      "cython"
+      "double_conversion"
+      "enum34_archive"
+      "flatbuffers"
+      "gast_archive"
+      "gif_archive"
+      "grpc"
+      "hwloc"
+      "icu"
+      "jpeg"
+      "jsoncpp_git"
+      "keras_applications_archive"
+      "lmdb"
+      "nasm"
+      # "nsync"
+      "sqlite"
+      # "pasta"
+      "pcre"
+      "png_archive"
+      "protobuf_archive"
+      "six_archive"
+      "snappy"
+      "swig"
+      "termcolor_archive"
+      "wrapt"
+      "zlib_archive"
+    ];
 
     preConfigure = ''
       patchShebangs configure
+
+      # arbitrarily set to the current latest bazel version, overly careful
+      export TF_IGNORE_MAX_BAZEL_VERSION=1
+
+      # don't rebuild the world
+      export TF_SYSTEM_LIBS=${lib.concatStringsSep " " SYSLIBS}
 
       export PYTHON_BIN_PATH="${python.interpreter}"
       export PYTHON_LIB_PATH="$NIX_BUILD_TOP/site-packages"
@@ -84,15 +188,23 @@ let
       mkdir -p "$PYTHON_LIB_PATH"
     '';
 
+    configurePhase = ''
+      runHook preConfigure
+      # no flags (options provided by previously set environment variables)
+      ./configure
+
+      runHook postConfigure
+    '';
+
     NIX_LDFLAGS = lib.optionals cudaSupport [ "-lcublas" "-lcudnn" "-lcuda" "-lcudart" ];
 
     hardeningDisable = [ "all" ];
 
-    bazelFlags = [ "--config=opt" ]
-                 ++ lib.optional sse42Support "--copt=-msse4.2"
-                 ++ lib.optional avx2Support "--copt=-mavx2"
-                 ++ lib.optional fmaSupport "--copt=-mfma"
-                 ++ lib.optional cudaSupport "--config=cuda";
+    bazelFlags = [
+    ] ++ lib.optional sse42Support "--copt=-msse4.2"
+      ++ lib.optional avx2Support "--copt=-mavx2"
+      ++ lib.optional fmaSupport "--copt=-mfma"
+      ++ lib.optional cudaSupport "--config=cuda";
 
     bazelTarget = "//tensorflow/tools/pip_package:build_pip_package";
 
@@ -101,7 +213,7 @@ let
         rm -rf $bazelOut/external/{bazel_tools,\@bazel_tools.marker,local_*,\@local_*}
       '';
 
-      sha256 = "1nc98aqrp14q7llypcwaa0kdn9xi7r0p1mnd3vmmn1m299py33ca";
+      sha256 = "1bb09y86ni0rmwg6rrnxwhgdxxj87v83hgs6abaryc31am4n45jh";
     };
 
     buildAttrs = {
@@ -129,14 +241,29 @@ in buildPythonPackage rec {
 
   installFlags = lib.optional (!withTensorboard) "--no-dependencies";
 
+  # Upstream has a pip hack that results in bin/tensorboard being in both tensorflow
+  # and the propageted input tensorflow-tensorboard which causes environment collisions.
+  # another possibility would be to have tensorboard only in the buildInputs
+  # https://github.com/tensorflow/tensorflow/blob/v1.7.1/tensorflow/tools/pip_package/setup.py#L79
+  postInstall = ''
+    rm $out/bin/tensorboard
+  '';
+
   postPatch = lib.optionalString (pythonAtLeast "3.4") ''
     sed -i '/enum34/d' setup.py
   '';
 
-  propagatedBuildInputs = [ numpy six protobuf absl-py ]
-                 ++ lib.optional (!isPy3k) mock
-                 ++ lib.optionals (pythonOlder "3.4") [ backports_weakref enum34 ]
-                 ++ lib.optional withTensorboard tensorflow-tensorboard;
+  propagatedBuildInputs = [
+    numpy six protobuf absl-py
+    keras-preprocessing
+    keras-applications
+    astor
+    gast
+    termcolor
+    wrapt
+  ] ++ lib.optional (!isPy3k) mock
+    ++ lib.optionals (pythonOlder "3.4") [ backports_weakref enum34 ]
+    ++ lib.optional withTensorboard tensorflow-tensorboard;
 
   # Actual tests are slow and impure.
   checkPhase = ''
