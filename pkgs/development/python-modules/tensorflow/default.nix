@@ -119,6 +119,7 @@ let
       curl
     ] ++ lib.optionals (!isPy3k) [
       future
+      mock
     ] ++ lib.optionals cudaSupport [ cudatoolkit cudnn nvidia_x11 ];
 
     # Take as many libraries from the system as possible. Keep in sync with
