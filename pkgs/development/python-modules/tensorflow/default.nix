@@ -8,6 +8,7 @@
 , keras-applications
 , astor
 , gast
+, google-pasta
 , termcolor
 , cython
 , flatbuffers
@@ -92,6 +93,7 @@ let
       cython
       flatbuffers
       gast
+      google-pasta
       giflib
       libjpeg
       grpc
@@ -144,9 +146,9 @@ let
       "keras_applications_archive"
       "lmdb"
       "nasm"
-      # "nsync"
+      # "nsync" # not packaged in nixpkgs
       "sqlite"
-      # "pasta"
+      "pasta"
       "pcre"
       "png_archive"
       "protobuf_archive"
@@ -249,16 +251,13 @@ in buildPythonPackage rec {
     rm $out/bin/tensorboard
   '';
 
-  postPatch = lib.optionalString (pythonAtLeast "3.4") ''
-    sed -i '/enum34/d' setup.py
-  '';
-
   propagatedBuildInputs = [
     numpy six protobuf absl-py
     keras-preprocessing
     keras-applications
     astor
     gast
+    google-pasta
     termcolor
     wrapt
   ] ++ lib.optional (!isPy3k) mock
