@@ -4,6 +4,7 @@
 , which, binutils, glibcLocales
 , python, jemalloc, openmpi
 , numpy, tensorflow-tensorboard, backports_weakref, mock, enum34, absl-py
+, future
 , keras-preprocessing
 , keras-applications
 , astor
@@ -116,8 +117,9 @@ let
       protobuf
       protobuf_cc
       curl
-    ]
-      ++ lib.optionals cudaSupport [ cudatoolkit cudnn nvidia_x11 ];
+    ] ++ lib.optionals (!isPy3k) [
+      future
+    ] ++ lib.optionals cudaSupport [ cudatoolkit cudnn nvidia_x11 ];
 
     # Take as many libraries from the system as possible. Keep in sync with
     # list of valid syslibs in
@@ -260,8 +262,10 @@ in buildPythonPackage rec {
     google-pasta
     termcolor
     wrapt
-  ] ++ lib.optional (!isPy3k) mock
-    ++ lib.optionals (pythonOlder "3.4") [ backports_weakref enum34 ]
+  ] ++ lib.optionals (!isPy3k) [
+    mock
+    future # FIXME
+  ] ++ lib.optionals (pythonOlder "3.4") [ backports_weakref enum34 ]
     ++ lib.optional withTensorboard tensorflow-tensorboard;
 
   # Actual tests are slow and impure.
