@@ -33,6 +33,7 @@
 , protobuf
 , protobuf_cc
 , curl
+, tensorflow-estimator
 , cudaSupport ? false, nvidia_x11 ? null, cudatoolkit ? null, cudnn ? null
 # XLA without CUDA is broken
 , xlaSupport ? cudaSupport
@@ -263,6 +264,7 @@ in buildPythonPackage rec {
     google-pasta
     termcolor
     wrapt
+    tensorflow-estimator
   ] ++ lib.optionals (!isPy3k) [
     mock
     future # FIXME
