@@ -265,6 +265,7 @@ in buildPythonPackage rec {
     termcolor
     wrapt
     tensorflow-estimator
+    grpcio
   ] ++ lib.optionals (!isPy3k) [
     mock
     future # FIXME
