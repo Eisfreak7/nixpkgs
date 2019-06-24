@@ -282,19 +282,6 @@ stdenv.mkDerivation rec {
           --replace /bin/true ${coreutils}/bin/true
       done
 
-      # toolchain locations
-      substituteInPlace "tools/cpp/cc_toolchain_config.bzl" \
-        --replace '/usr/bin/ar' ${binutils.bintools}/bin/ar \
-        --replace '/usr/bin/ld' ${gcc}/bin/ld \
-        --replace '/usr/bin/cpp' ${gcc}/bin/cpp \
-        --replace '/usr/bin/dwp' ${binutils.bintools}/bin/dwp \
-        --replace '/usr/bin/gcc' ${gcc}/bin/gcc \
-        --replace '/usr/bin/gcov' ${gcc.cc}/bin/gcov \
-        --replace '/usr/bin/nm' ${binutils.bintools}/bin/nm \
-        --replace '/usr/bin/objcopy' ${binutils.bintools}/bin/objcopy \
-        --replace '/usr/bin/objdump' ${binutils.bintools}/bin/objdump \
-        --replace '/usr/bin/strip' ${binutils.bintools}/bin/strip
-
       # Fixup scripts that generate scripts. Not fixed up by patchShebangs below.
       substituteInPlace scripts/bootstrap/compile.sh \
           --replace /bin/bash ${customBash}/bin/bash
@@ -349,6 +336,13 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     buildJdk
+
+    # bazel detects default tool locations during build time using `which` (in
+    # tools/cpp/unic_cc_configure.bzl:_find_tool). Make sure the tools are in
+    # PATH.
+    binutils.bintools # for ar, dwp, nm, objcopy, objdump, strip
+    gcc # for ld, cpp, gcc
+    gcc.cc # for gcov
   ];
 
   # when a command can’t be found in a bazel build, you might also
