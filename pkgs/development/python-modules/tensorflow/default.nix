@@ -245,7 +245,9 @@ in buildPythonPackage rec {
 
   src = pkg;
 
-  installFlags = lib.optional (!withTensorboard) "--no-dependencies";
+  postPatch = lib.optionalString (!withTensorboard) ''
+    sed -i '/tensorboard >=/d' setup.py
+  '';
 
   # Upstream has a pip hack that results in bin/tensorboard being in both tensorflow
   # and the propageted input tensorflow-tensorboard which causes environment collisions.
