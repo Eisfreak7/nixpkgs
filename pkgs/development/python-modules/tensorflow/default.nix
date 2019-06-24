@@ -103,6 +103,7 @@ let
       hwloc
       icu
       jsoncpp
+
       # keras-applications
       # lmdb
       # nasm
@@ -110,14 +111,14 @@ let
       # pcre
       # libpng
       # six
-      # snappy
-      # swig
-      # termcolor
-      # wrapt
-      # zlib
-      # protobuf
-      # protobuf_cc
-      # curl
+      snappy
+      swig
+      termcolor
+      wrapt
+      zlib
+      protobuf
+      protobuf_cc
+      curl
     ] ++ lib.optionals (!isPy3k) [
       future
       mock
