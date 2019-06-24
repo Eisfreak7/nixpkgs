@@ -83,6 +83,7 @@ let
 
     nativeBuildInputs = [ swig which ];
 
+    # tensorflow/tools/ci_build/Dockerfile.cmake
     buildInputs = [
       python jemalloc openmpi glibcLocales
       git
@@ -257,6 +258,7 @@ in buildPythonPackage rec {
     rm $out/bin/tensorboard
   '';
 
+  # tensorflow/tools/pip_package/setup.py
   propagatedBuildInputs = [
     absl-py
     astor
@@ -271,6 +273,7 @@ in buildPythonPackage rec {
     tensorflow-estimator # TODO tensorflow_estimator
     termcolor
     wrapt
+    grpcio
   ] ++ lib.optionals (!isPy3k) [
     mock
     future # FIXME
