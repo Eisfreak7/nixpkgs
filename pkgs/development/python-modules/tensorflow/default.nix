@@ -244,7 +244,6 @@ let
         export TF_CUDA_PATHS="${cudatoolkit_joined},${cudnn},${nccl}"
         export TF_CUDA_VERSION=${cudatoolkit.majorVersion}
         export TF_CUDNN_VERSION=${cudnn.majorVersion}
-        export TF_NCCL_VERSION=""
         export GCC_HOST_COMPILER_PATH=${cudatoolkit.cc}/bin/gcc
         export TF_CUDA_COMPUTE_CAPABILITIES=${lib.concatStringsSep "," cudaCapabilities}
       ''}
