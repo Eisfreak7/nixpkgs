@@ -249,6 +249,9 @@ let
         export TF_CUDA_COMPUTE_CAPABILITIES=${lib.concatStringsSep "," cudaCapabilities}
       ''}
 
+      # TODO link upstream issue
+      sed -i '/androidndk/d' tensorflow/lite/kernels/internal/BUILD
+
       mkdir -p "$PYTHON_LIB_PATH"
     '';
 
@@ -277,7 +280,8 @@ let
         rm -rf $bazelOut/external/{bazel_tools,\@bazel_tools.marker,local_*,\@local_*}
       '';
 
-      sha256 = "1bb09y86ni0rmwg6rrnxwhgdxxj87v83hgs6abaryc31am4n45jh";
+      # FIXME diff with or without cuda
+      sha256 = "148xqmrc6w1s1dfrpfmy1f4y7b93caldvq2ycn4c02n04rdximlx";
     };
 
     buildAttrs = {
