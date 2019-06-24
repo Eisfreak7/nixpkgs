@@ -4,7 +4,6 @@
 , which, binutils, glibcLocales
 , python, jemalloc, openmpi
 , numpy, tensorflow-tensorboard, backports_weakref, mock, enum34, absl-py
-# TODO tensorrt ldconfig
 , future
 , keras-preprocessing
 , keras-applications
@@ -68,14 +67,7 @@ let
   version = "1.14";
 
   pkg = buildBazelPackage rec {
-    # indicate which configuration of the wheel is being built
-    pname = let
-      pythonPrefix = "python${python.pythonVersion}";
-      basename = "tensorflow-wheel";
-      cudaStr = lib.optionalString cudaSupport "-withcuda";
-    in
-      "${pythonPrefix}-${basename}${cudaStr}";
-    name = "${pname}-${version}";
+    name = "tensorflow-build-${version}";
 
     src = fetchFromGitHub {
       owner = "tensorflow";
@@ -89,51 +81,11 @@ let
       ./no-saved-proto.patch
     ];
 
-    # On update, it can be useful to steal the changes from gentoo
-    # https://gitweb.gentoo.org/repo/gentoo.git/tree/sci-libs/tensorflow
-
     nativeBuildInputs = [ swig which ];
 
-    # curl
-    # ffmpeg
-    # git
-    # libcurl4-openssl-dev
-    # libtool
-    # libssl-dev
-    # mlocate
-    # openjdk-8-jdk
-    # openjdk-8-jre-headless
-    # pkg-config
-    # python-dev
-    # python-setuptools
-    # python-virtualenv
-    # python3-dev
-    # python3-setuptools
-    # rsync
-    # sudo
-    # swig
-    # unzip
-    # vim
-    # wget
-    # zip
-    # zlib1g-dev
-    # golang
-
-    # python wheel
-    # python astor
-    # python gast
-    # python numpy
-    # python termcolor
-    # python keras_applications
-    # python keras_preprocessing
-
     buildInputs = [
-      python
-      jemalloc
-      openmpi
-      glibcLocales
+      python jemalloc openmpi glibcLocales
       git
-
       # python deps needed during wheel build time
       numpy
       keras-preprocessing
@@ -143,7 +95,7 @@ let
       cython
       flatbuffers
       gast
-      google-pasta # TODO rename to google_pasta
+      google-pasta
       giflib
       libjpeg
       grpc
@@ -169,11 +121,7 @@ let
     ] ++ lib.optionals (!isPy3k) [
       future
       mock
-    ] ++ lib.optionals cudaSupport [
-      cudatoolkit
-      cudnn
-      nvidia_x11
-    ];
+    ] ++ lib.optionals cudaSupport [ cudatoolkit cudnn nvidia_x11 ];
 
     # Take as many libraries from the system as possible. Keep in sync with
     # list of valid syslibs in
@@ -219,12 +167,6 @@ let
     preConfigure = ''
       patchShebangs configure
 
-      # dummy ldconfig
-      mkdir dummy-ldconfig
-      echo "#!${stdenv.shell}" > dummy-ldconfig/ldconfig
-      chmod +x dummy-ldconfig/ldconfig
-      export PATH="$PWD/dummy-ldconfig:$PATH"
-
       # arbitrarily set to the current latest bazel version, overly careful
       export TF_IGNORE_MAX_BAZEL_VERSION=1
 
@@ -241,16 +183,13 @@ let
       export TF_NEED_MPI=${tfFeature cudaSupport}
       export TF_NEED_CUDA=${tfFeature cudaSupport}
       ${lib.optionalString cudaSupport ''
-        export TF_CUDA_PATHS="${cudatoolkit_joined},${cudnn}"
+        export CUDA_TOOLKIT_PATH=${cudatoolkit_joined}
         export TF_CUDA_VERSION=${cudatoolkit.majorVersion}
+        export CUDNN_INSTALL_PATH=${cudnn}
         export TF_CUDNN_VERSION=${cudnn.majorVersion}
-        export TF_NCCL_VERSION=""
         export GCC_HOST_COMPILER_PATH=${cudatoolkit.cc}/bin/gcc
         export TF_CUDA_COMPUTE_CAPABILITIES=${lib.concatStringsSep "," cudaCapabilities}
       ''}
-
-      # TODO link upstream issue
-      sed -i '/androidndk/d' tensorflow/lite/kernels/internal/BUILD
 
       mkdir -p "$PYTHON_LIB_PATH"
     '';
@@ -263,7 +202,6 @@ let
       runHook postConfigure
     '';
 
-    # FIXME
     NIX_LDFLAGS = lib.optionals cudaSupport [ "-lcublas" "-lcudnn" "-lcuda" "-lcudart" ];
 
     hardeningDisable = [ "all" ];
@@ -271,7 +209,8 @@ let
     bazelFlags = [
     ] ++ lib.optional sse42Support "--copt=-msse4.2"
       ++ lib.optional avx2Support "--copt=-mavx2"
-      ++ lib.optional fmaSupport "--copt=-mfma";
+      ++ lib.optional fmaSupport "--copt=-mfma"
+      ++ lib.optional cudaSupport "--config=cuda";
 
     bazelTarget = "//tensorflow/tools/pip_package:build_pip_package";
 
@@ -280,19 +219,15 @@ let
         rm -rf $bazelOut/external/{bazel_tools,\@bazel_tools.marker,local_*,\@local_*}
       '';
 
-      # FIXME diff with or without cuda
-      # without cuda: 1bb09y86ni0rmwg6rrnxwhgdxxj87v83hgs6abaryc31am4n45jh
-      sha256 = "148xqmrc6w1s1dfrpfmy1f4y7b93caldvq2ycn4c02n04rdximlx";
+      sha256 = "1bb09y86ni0rmwg6rrnxwhgdxxj87v83hgs6abaryc31am4n45jh";
     };
 
     buildAttrs = {
       preBuild = ''
         patchShebangs .
-        export AR=${binutils.bintools}/bin/ar
-        # TODO also srcmain/tools/process-wrapper-legacy.cc
-        #find -type f -name CROSSTOOL\* -exec sed -i \
-          #-e 's,/usr/bin/ar,${binutils.bintools}/bin/ar,g' \
-          #{} \;
+        find -type f -name CROSSTOOL\* -exec sed -i \
+          -e 's,/usr/bin/ar,${binutils.bintools}/bin/ar,g' \
+          {} \;
       '';
 
       installPhase = ''
@@ -310,8 +245,8 @@ in buildPythonPackage rec {
 
   src = pkg;
 
-  postPatch = lib.optionalString (!withTensorboard) ''
-    sed -i '/tensorboard >=/d' setup.py
+  postPatch = lib.optional (!withTensorboard) ''
+    sed -i '/tensorboard/d' setup.py
   '';
 
   # Upstream has a pip hack that results in bin/tensorboard being in both tensorflow
@@ -322,33 +257,24 @@ in buildPythonPackage rec {
     rm $out/bin/tensorboard
   '';
 
-  # tensorflow/tools/pip_package/setup.py
   propagatedBuildInputs = [
-    absl-py
+    numpy six protobuf absl-py
+    keras-preprocessing
+    keras-applications
     astor
     gast
     google-pasta
-    keras-applications # TODO keras_applications
-    keras-preprocessing # TODO keras_preprocessing
-    numpy
-    six
-    protobuf
-    # tensorboard
-    tensorflow-estimator # TODO tensorflow_estimator
     termcolor
     wrapt
+    tensorflow-estimator
     grpcio
   ] ++ lib.optionals (!isPy3k) [
     mock
     future # FIXME
-  ] ++ lib.optionals (pythonOlder "3.4") [
-    backports_weakref enum34
-  ] ++ lib.optionals withTensorboard [
-    tensorflow-tensorboard # TODO tensorboard
-  ];
+  ] ++ lib.optionals (pythonOlder "3.4") [ backports_weakref enum34 ]
+    ++ lib.optional withTensorboard tensorflow-tensorboard;
 
   # Actual tests are slow and impure.
-  # TODO better test
   checkPhase = ''
     ${python.interpreter} -c "import tensorflow"
   '';
