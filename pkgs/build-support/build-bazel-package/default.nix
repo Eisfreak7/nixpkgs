@@ -122,6 +122,7 @@ in stdenv.mkDerivation (fBuildAttrs // {
 
     BAZEL_USE_CPP_ONLY_TOOLCHAIN=1 \
     USER=homeless-shelter \
+    echo "Running bazel build with flags $bazelFlags"
     bazel \
       --output_base="$bazelOut" \
       --output_user_root="$bazelUserRoot" \
