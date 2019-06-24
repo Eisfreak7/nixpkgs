@@ -4,6 +4,7 @@
 , which, binutils, glibcLocales
 , python, jemalloc, openmpi
 , numpy, tensorflow-tensorboard, backports_weakref, mock, enum34, absl-py
+# TODO tensorrt ldconfig
 , future
 , keras-preprocessing
 , keras-applications
@@ -211,6 +212,11 @@ let
     preConfigure = ''
       patchShebangs configure
 
+      # dummy ldconfig
+      mkdir dummy-ldconfig
+      echo "#!${stdenv.shell}" > dummy-ldconfig/ldconfig
+      export PATH="$PWD/dummy-ldconfig:$PATH"
+
       # arbitrarily set to the current latest bazel version, overly careful
       export TF_IGNORE_MAX_BAZEL_VERSION=1
 
@@ -230,6 +236,7 @@ let
         export TF_CUDA_PATHS="${cudatoolkit_joined},${cudnn}"
         export TF_CUDA_VERSION=${cudatoolkit.majorVersion}
         export TF_CUDNN_VERSION=${cudnn.majorVersion}
+        export TF_NCCL_VERSION=""
         export GCC_HOST_COMPILER_PATH=${cudatoolkit.cc}/bin/gcc
         export TF_CUDA_COMPUTE_CAPABILITIES=${lib.concatStringsSep "," cudaCapabilities}
       ''}
