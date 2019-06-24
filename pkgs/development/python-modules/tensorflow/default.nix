@@ -83,10 +83,46 @@ let
 
     nativeBuildInputs = [ swig which ];
 
-    # tensorflow/tools/ci_build/Dockerfile.cmake
+    # curl
+    # ffmpeg
+    # git
+    # libcurl4-openssl-dev
+    # libtool
+    # libssl-dev
+    # mlocate
+    # openjdk-8-jdk
+    # openjdk-8-jre-headless
+    # pkg-config
+    # python-dev
+    # python-setuptools
+    # python-virtualenv
+    # python3-dev
+    # python3-setuptools
+    # rsync
+    # sudo
+    # swig
+    # unzip
+    # vim
+    # wget
+    # zip
+    # zlib1g-dev
+    # golang
+
+    # python wheel
+    # python astor
+    # python gast
+    # python numpy
+    # python termcolor
+    # python keras_applications
+    # python keras_preprocessing
+
     buildInputs = [
-      python jemalloc openmpi glibcLocales
+      python
+      jemalloc
+      openmpi
+      glibcLocales
       git
+
       # python deps needed during wheel build time
       numpy
       keras-preprocessing
@@ -122,7 +158,11 @@ let
     ] ++ lib.optionals (!isPy3k) [
       future
       mock
-    ] ++ lib.optionals cudaSupport [ cudatoolkit cudnn nvidia_x11 ];
+    ] ++ lib.optionals cudaSupport [
+      cudatoolkit
+      cudnn
+      nvidia_x11
+    ];
 
     # Take as many libraries from the system as possible. Keep in sync with
     # list of valid syslibs in
