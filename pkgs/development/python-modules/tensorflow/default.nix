@@ -67,7 +67,7 @@ let
   version = "1.14";
 
   pkg = buildBazelPackage rec {
-    name = "tensorflow-build-${version}";
+    name = "tensorflow-build${lib.optionalString cudaSupport "-withcuda"}-${version}";
 
     src = fetchFromGitHub {
       owner = "tensorflow";
@@ -224,7 +224,7 @@ let
       export TF_NEED_MPI=${tfFeature cudaSupport}
       export TF_NEED_CUDA=${tfFeature cudaSupport}
       ${lib.optionalString cudaSupport ''
-        export CUDA_TOOLKIT_PATH=${cudatoolkit_joined}
+        export TF_CUDA_PATHS=${cudatoolkit_joined}
         export TF_CUDA_VERSION=${cudatoolkit.majorVersion}
         export CUDNN_INSTALL_PATH=${cudnn}
         export TF_CUDNN_VERSION=${cudnn.majorVersion}
