@@ -1,0 +1,14 @@
+diff --git a/tensorflow/contrib/makefile/Makefile b/tensorflow/contrib/makefile/Makefile
+index 13f8431331..92d757202e 100644
+--- a/tensorflow/contrib/makefile/Makefile
++++ b/tensorflow/contrib/makefile/Makefile
+@@ -826,6 +826,9 @@ tensorflow/core/util/version_info.cc: .phony_version_info
+ # Gathers together all the objects we've compiled into a single '.a' archive.
+ $(LIB_PATH): $(LIB_OBJS)
+ 	@mkdir -p $(dir $@)
++	echo "Making dir"
++	echo "$(AR)"
++	exit 0
+ 	$(AR) $(ARFLAGS) $(LIB_PATH) $(LIB_OBJS)
+ 
+ $(BENCHMARK_NAME): $(BENCHMARK_OBJS) $(LIB_PATH) $(CUDA_LIB_DEPS)

@@ -283,9 +283,11 @@ let
         rm -rf $bazelOut/external/{bazel_tools,\@bazel_tools.marker,local_*,\@local_*}
       '';
 
-      # FIXME diff with or without cuda
-      # without cuda: 1bb09y86ni0rmwg6rrnxwhgdxxj87v83hgs6abaryc31am4n45jh
-      sha256 = "148xqmrc6w1s1dfrpfmy1f4y7b93caldvq2ycn4c02n04rdximlx";
+      # FIXME look into diff
+      sha256 = if cudaSupport then
+        "148xqmrc6w1s1dfrpfmy1f4y7b93caldvq2ycn4c02n04rdximlx"
+      else
+        "1bb09y86ni0rmwg6rrnxwhgdxxj87v83hgs6abaryc31am4n45jh";
     };
 
     buildAttrs = {
