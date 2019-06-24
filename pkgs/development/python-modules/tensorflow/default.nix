@@ -80,8 +80,8 @@ let
     src = fetchFromGitHub {
       owner = "tensorflow";
       repo = "tensorflow";
-      rev = "r1.14";
-      sha256 = "06jvwlsm14b8rqwd8q8796r0vmn0wk64s4ps2zg0sapkmp9vvcmi";
+      rev = "r${version}";
+      sha256 = "071rndqh3xy4y5idlykqv656lggp25vy4qx1divz4id3im1zlr13";
     };
 
     patches = [
@@ -166,6 +166,7 @@ let
       protobuf
       protobuf_cc
       curl
+      binutils
     ] ++ lib.optionals (!isPy3k) [
       future
       mock
