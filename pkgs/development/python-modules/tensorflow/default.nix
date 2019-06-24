@@ -95,7 +95,7 @@ let
       cython
       flatbuffers
       gast
-      google-pasta
+      google-pasta # TODO rename to google_pasta
       giflib
       libjpeg
       grpc
@@ -258,23 +258,30 @@ in buildPythonPackage rec {
   '';
 
   propagatedBuildInputs = [
-    numpy six protobuf absl-py
-    keras-preprocessing
-    keras-applications
+    absl-py
     astor
     gast
     google-pasta
+    keras-applications # TODO keras_applications
+    keras-preprocessing # TODO keras_preprocessing
+    numpy
+    six
+    protobuf
+    # tensorboard
+    tensorflow-estimator # TODO tensorflow_estimator
     termcolor
     wrapt
-    tensorflow-estimator
-    grpcio
   ] ++ lib.optionals (!isPy3k) [
     mock
     future # FIXME
-  ] ++ lib.optionals (pythonOlder "3.4") [ backports_weakref enum34 ]
-    ++ lib.optional withTensorboard tensorflow-tensorboard;
+  ] ++ lib.optionals (pythonOlder "3.4") [
+    backports_weakref enum34
+  ] ++ lib.optionals withTensorboard [
+    tensorflow-tensorboard # TODO tensorboard
+  ];
 
   # Actual tests are slow and impure.
+  # TODO better test
   checkPhase = ''
     ${python.interpreter} -c "import tensorflow"
   '';
