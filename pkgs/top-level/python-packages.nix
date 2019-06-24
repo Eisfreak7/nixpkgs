@@ -5367,6 +5367,7 @@ in {
       inherit (pkgs.linuxPackages) nvidia_x11;
       cudatoolkit = pkgs.cudatoolkit_10_0;
       cudnn = pkgs.cudnn_cudatoolkit_10_0;
+      nccl = pkgs.nccl_cudatoolkit_10_0;
       protobuf_cc = pkgs.protobuf; # not the python version
     };
 
