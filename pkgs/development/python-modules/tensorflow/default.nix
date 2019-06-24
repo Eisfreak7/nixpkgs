@@ -258,6 +258,7 @@ let
     configurePhase = ''
       runHook preConfigure
       # no flags (options provided by previously set environment variables)
+      export AR="${binutils.bintools}/bin/ar"
       ./configure
 
       runHook postConfigure
@@ -269,6 +270,8 @@ let
     hardeningDisable = [ "all" ];
 
     bazelFlags = [
+      "--action_env=AR=${binutils.bintools}/bin/ar"
+      "--action_env=BR=${binutils.bintools}/bin/ar"
     ] ++ lib.optional sse42Support "--copt=-msse4.2"
       ++ lib.optional avx2Support "--copt=-mavx2"
       ++ lib.optional fmaSupport "--copt=-mfma";
@@ -288,11 +291,19 @@ let
     buildAttrs = {
       preBuild = ''
         patchShebangs .
-        export AR=${binutils.bintools}/bin/ar
-        # TODO also srcmain/tools/process-wrapper-legacy.cc
-        #find -type f -name CROSSTOOL\* -exec sed -i \
-          #-e 's,/usr/bin/ar,${binutils.bintools}/bin/ar,g' \
-          #{} \;
+
+        # beautiful bash to iterate over files containing a string
+        # https://github.com/bazelbuild/bazel/issues/5915#issuecomment-505100422
+        grep \
+          --files-with-matches \
+          --recursive \
+          --null '/usr/bin/ar\b' | while IFS="" read -r -d "" file; do
+            # patch /usr/bin/ar to the proper location
+            echo "File is $file"
+            sed -i \
+              -e 's,/usr/bin/ar\b,${binutils.bintools}/bin/ar,g' \
+              "$file"
+        done
       '';
 
       installPhase = ''
