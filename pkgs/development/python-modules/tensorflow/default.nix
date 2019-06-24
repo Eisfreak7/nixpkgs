@@ -81,6 +81,9 @@ let
       ./no-saved-proto.patch
     ];
 
+    # On update, it can be useful to steal the changes from gentoo
+    # https://gitweb.gentoo.org/repo/gentoo.git/tree/sci-libs/tensorflow
+
     nativeBuildInputs = [ swig which ];
 
     # curl
@@ -224,9 +227,8 @@ let
       export TF_NEED_MPI=${tfFeature cudaSupport}
       export TF_NEED_CUDA=${tfFeature cudaSupport}
       ${lib.optionalString cudaSupport ''
-        export TF_CUDA_PATHS=${cudatoolkit_joined}
+        export TF_CUDA_PATHS="${cudatoolkit_joined},${cudnn}"
         export TF_CUDA_VERSION=${cudatoolkit.majorVersion}
-        export CUDNN_INSTALL_PATH=${cudnn}
         export TF_CUDNN_VERSION=${cudnn.majorVersion}
         export GCC_HOST_COMPILER_PATH=${cudatoolkit.cc}/bin/gcc
         export TF_CUDA_COMPUTE_CAPABILITIES=${lib.concatStringsSep "," cudaCapabilities}
