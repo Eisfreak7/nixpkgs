@@ -259,6 +259,7 @@ let
       runHook postConfigure
     '';
 
+    # FIXME
     NIX_LDFLAGS = lib.optionals cudaSupport [ "-lcublas" "-lcudnn" "-lcuda" "-lcudart" ];
 
     hardeningDisable = [ "all" ];
@@ -266,8 +267,7 @@ let
     bazelFlags = [
     ] ++ lib.optional sse42Support "--copt=-msse4.2"
       ++ lib.optional avx2Support "--copt=-mavx2"
-      ++ lib.optional fmaSupport "--copt=-mfma"
-      ++ lib.optional cudaSupport "--config=cuda";
+      ++ lib.optional fmaSupport "--copt=-mfma";
 
     bazelTarget = "//tensorflow/tools/pip_package:build_pip_package";
 
