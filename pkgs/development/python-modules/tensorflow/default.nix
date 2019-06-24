@@ -103,14 +103,13 @@ let
       hwloc
       icu
       jsoncpp
-
-      # keras-applications
-      # lmdb
-      # nasm
-      # sqlite
-      # pcre
-      # libpng
-      # six
+      keras-applications
+      lmdb
+      nasm
+      sqlite
+      pcre
+      libpng
+      six
       snappy
       swig
       termcolor
