@@ -4,7 +4,6 @@
 , which, binutils, glibcLocales
 , python, jemalloc, openmpi
 , numpy, tensorflow-tensorboard, backports_weakref, mock, enum34, absl-py
-# TODO tensorrt ldconfig
 , future
 , keras-preprocessing
 , keras-applications
@@ -35,7 +34,7 @@
 , protobuf_cc
 , curl
 , tensorflow-estimator
-, cudaSupport ? false, nvidia_x11 ? null, cudatoolkit ? null, cudnn ? null
+, cudaSupport ? false, nvidia_x11 ? null, cudatoolkit ? null, cudnn ? null, nccl ? null
 # XLA without CUDA is broken
 , xlaSupport ? cudaSupport
 # Default from ./configure script
@@ -242,7 +241,7 @@ let
       export TF_NEED_MPI=${tfFeature cudaSupport}
       export TF_NEED_CUDA=${tfFeature cudaSupport}
       ${lib.optionalString cudaSupport ''
-        export TF_CUDA_PATHS="${cudatoolkit_joined},${cudnn}"
+        export TF_CUDA_PATHS="${cudatoolkit_joined},${cudnn},${nccl}"
         export TF_CUDA_VERSION=${cudatoolkit.majorVersion}
         export TF_CUDNN_VERSION=${cudnn.majorVersion}
         export TF_NCCL_VERSION=""
@@ -250,7 +249,7 @@ let
         export TF_CUDA_COMPUTE_CAPABILITIES=${lib.concatStringsSep "," cudaCapabilities}
       ''}
 
-      # TODO link upstream issue
+      # https://github.com/tensorflow/tensorflow/issues/20919
       sed -i '/androidndk/d' tensorflow/lite/kernels/internal/BUILD
 
       mkdir -p "$PYTHON_LIB_PATH"
