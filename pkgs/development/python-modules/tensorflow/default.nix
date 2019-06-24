@@ -71,9 +71,10 @@ let
     # indicate which configuration of the wheel is being built
     pname = let
       pythonPrefix = "python${python.pythonVersion}";
+      basename = "tensorflow-wheel";
       cudaStr = lib.optionalString cudaSupport "-withcuda";
     in
-      "${pythonPrefix}-tensorflow${cudaStr}-wheel";
+      "${pythonPrefix}-${basename}${cudaStr}";
     name = "${pname}-${version}";
 
     src = fetchFromGitHub {
@@ -199,8 +200,8 @@ let
       "jpeg"
       "jsoncpp_git"
       "keras_applications_archive"
-      # "lmdb"
-      # "nasm"
+      "lmdb"
+      "nasm"
       # "nsync" # not packaged in nixpkgs
       "sqlite"
       "pasta"
@@ -272,7 +273,6 @@ let
     bazelTarget = "//tensorflow/tools/pip_package:build_pip_package";
 
     fetchAttrs = {
-      # TODO differs with/without cuda?
       preInstall = ''
         rm -rf $bazelOut/external/{bazel_tools,\@bazel_tools.marker,local_*,\@local_*}
       '';
