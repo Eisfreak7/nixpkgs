@@ -3,6 +3,8 @@
 , bazel
 , lr, xe, zip, unzip, bash, writeCBin, coreutils
 , which, python, gawk, gnused, gnutar, gnugrep, gzip, findutils
+, binutils
+, gcc
 # Apple dependencies
 , cctools, libcxx, CoreFoundation, CoreServices, Foundation
 # Allow to independently override the jdks used to build and run respectively
@@ -279,6 +281,19 @@ stdenv.mkDerivation rec {
           --replace /usr/bin/env ${coreutils}/bin/env \
           --replace /bin/true ${coreutils}/bin/true
       done
+
+      # toolchain locations
+      substituteInPlace "tools/cpp/cc_toolchain_config.bzl" \
+        --replace '/usr/bin/ar' ${binutils.bintools}/bin/ar \
+        --replace '/usr/bin/ld' ${gcc}/bin/ld \
+        --replace '/usr/bin/cpp' ${gcc}/bin/cpp \
+        --replace '/usr/bin/dwp' ${binutils.bintools}/bin/dwp \
+        --replace '/usr/bin/gcc' ${gcc}/bin/gcc \
+        --replace '/usr/bin/gcov' ${gcc.cc}/bin/gcov \
+        --replace '/usr/bin/nm' ${binutils.bintools}/bin/nm \
+        --replace '/usr/bin/objcopy' ${binutils.bintools}/bin/objcopy \
+        --replace '/usr/bin/objdump' ${binutils.bintools}/bin/objdump \
+        --replace '/usr/bin/strip' ${binutils.bintools}/bin/strip
 
       # Fixup scripts that generate scripts. Not fixed up by patchShebangs below.
       substituteInPlace scripts/bootstrap/compile.sh \
