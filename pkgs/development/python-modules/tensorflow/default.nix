@@ -271,8 +271,6 @@ let
     hardeningDisable = [ "all" ];
 
     bazelFlags = [
-      "--action_env=AR=${binutils.bintools}/bin/ar"
-      "--action_env=BR=${binutils.bintools}/bin/ar"
     ] ++ lib.optional sse42Support "--copt=-msse4.2"
       ++ lib.optional avx2Support "--copt=-mavx2"
       ++ lib.optional fmaSupport "--copt=-mfma";
