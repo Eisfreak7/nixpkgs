@@ -68,7 +68,14 @@ let
   version = "1.14";
 
   pkg = buildBazelPackage rec {
-    name = "tensorflow-build${lib.optionalString cudaSupport "-withcuda"}-${version}";
+    # indicate which configuration of the wheel is being built
+    pname = let
+      pythonPrefix = "python${python.pythonVersion}";
+      basename = "tensorflow-wheel";
+      cudaStr = lib.optionalString cudaSupport "-withcuda";
+    in
+      "${pythonPrefix}-${basename}${cudaStr}";
+    name = "${pname}-${version}";
 
     src = fetchFromGitHub {
       owner = "tensorflow";
@@ -215,6 +222,7 @@ let
       # dummy ldconfig
       mkdir dummy-ldconfig
       echo "#!${stdenv.shell}" > dummy-ldconfig/ldconfig
+      chmod +x dummy-ldconfig/ldconfig
       export PATH="$PWD/dummy-ldconfig:$PATH"
 
       # arbitrarily set to the current latest bazel version, overly careful
