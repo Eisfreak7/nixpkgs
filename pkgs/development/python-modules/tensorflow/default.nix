@@ -172,7 +172,6 @@ let
       icu
       jsoncpp
       keras-applications
-      lmdb
       nasm
       sqlite
       pcre
