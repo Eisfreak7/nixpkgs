@@ -168,7 +168,6 @@ let
       libjpeg
       grpc
       grpcio
-      hwloc
       icu
       jsoncpp
       keras-applications
