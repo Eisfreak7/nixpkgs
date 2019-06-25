@@ -170,7 +170,6 @@ let
       grpcio
       hwloc
       icu
-      jsoncpp
       keras-applications
       lmdb
       nasm
