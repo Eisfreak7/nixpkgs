@@ -177,7 +177,6 @@ let
       sqlite
       pcre
       libpng
-      six
       snappy
       swig
       termcolor
