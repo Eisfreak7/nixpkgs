@@ -180,7 +180,6 @@ let
       six
       snappy
       swig
-      termcolor
       wrapt
       zlib
       protobuf
