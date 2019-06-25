@@ -181,7 +181,6 @@ let
       snappy
       swig
       termcolor
-      wrapt
       zlib
       protobuf
       protobuf_cc
