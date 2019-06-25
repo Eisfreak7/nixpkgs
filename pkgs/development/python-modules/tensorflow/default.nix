@@ -161,7 +161,6 @@ let
       absl-py
       astor
       cython
-      flatbuffers
       gast
       google-pasta # TODO rename to google_pasta
       giflib
