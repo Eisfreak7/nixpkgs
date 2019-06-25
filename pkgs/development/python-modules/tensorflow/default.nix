@@ -164,7 +164,6 @@ let
       flatbuffers
       gast
       google-pasta # TODO rename to google_pasta
-      giflib
       libjpeg
       grpc
       grpcio
