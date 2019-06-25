@@ -179,7 +179,6 @@ let
       libpng
       six
       snappy
-      swig
       termcolor
       wrapt
       zlib
