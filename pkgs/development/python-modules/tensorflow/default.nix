@@ -175,7 +175,6 @@ let
       lmdb
       nasm
       sqlite
-      pcre
       libpng
       six
       snappy
