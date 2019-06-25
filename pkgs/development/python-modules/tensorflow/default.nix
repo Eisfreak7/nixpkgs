@@ -182,7 +182,6 @@ let
       swig
       termcolor
       wrapt
-      zlib
       protobuf
       protobuf_cc
       curl
