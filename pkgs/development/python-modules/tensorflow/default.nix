@@ -159,7 +159,6 @@ let
       keras-preprocessing
       # libs taken from system through the TF_SYS_LIBS mechanism
       absl-py
-      astor
       cython
       flatbuffers
       gast
