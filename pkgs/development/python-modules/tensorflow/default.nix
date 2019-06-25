@@ -171,7 +171,6 @@ let
       hwloc
       icu
       jsoncpp
-      keras-applications
       lmdb
       nasm
       sqlite
