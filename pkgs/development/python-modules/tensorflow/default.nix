@@ -184,7 +184,6 @@ let
       wrapt
       zlib
       protobuf
-      protobuf_cc
       curl
       binutils
     ] ++ lib.optionals (!isPy3k) [
