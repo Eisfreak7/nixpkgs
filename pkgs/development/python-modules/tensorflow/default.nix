@@ -174,7 +174,6 @@ let
       keras-applications
       lmdb
       nasm
-      sqlite
       pcre
       libpng
       six
