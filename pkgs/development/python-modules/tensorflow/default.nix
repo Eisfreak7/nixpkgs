@@ -167,7 +167,6 @@ let
       giflib
       libjpeg
       grpc
-      grpcio
       hwloc
       icu
       jsoncpp
