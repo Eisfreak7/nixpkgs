@@ -176,7 +176,6 @@ let
       nasm
       sqlite
       pcre
-      libpng
       six
       snappy
       swig
