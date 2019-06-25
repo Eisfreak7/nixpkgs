@@ -186,7 +186,6 @@ let
       protobuf
       protobuf_cc
       curl
-      binutils
     ] ++ lib.optionals (!isPy3k) [
       future
       mock
