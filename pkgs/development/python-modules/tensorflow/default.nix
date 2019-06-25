@@ -183,7 +183,6 @@ let
       termcolor
       wrapt
       zlib
-      protobuf
       protobuf_cc
       curl
       binutils
