@@ -178,7 +178,6 @@ let
       pcre
       libpng
       six
-      snappy
       swig
       termcolor
       wrapt
