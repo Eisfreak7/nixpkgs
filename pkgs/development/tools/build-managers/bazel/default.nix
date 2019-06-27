@@ -4,7 +4,7 @@
 , lr, xe, zip, unzip, bash, writeCBin, coreutils
 , which, gawk, gnused, gnutar, gnugrep, gzip, findutils
 # updater
-, python2, python3, writeScript
+, python3, writeScript
 # Apple dependencies
 , cctools, libcxx, CoreFoundation, CoreServices, Foundation
 # Allow to independently override the jdks used to build and run respectively
@@ -372,7 +372,6 @@ stdenv.mkDerivation rec {
   buildInputs = [
     buildJdk
     python3
-    python2
   ];
 
   # when a command can’t be found in a bazel build, you might also
@@ -380,7 +379,6 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     zip
     python3
-    python2
     unzip
     makeWrapper
     which
