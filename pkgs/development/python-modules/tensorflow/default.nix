@@ -246,6 +246,7 @@ let
     bazelFlags = [
       # temporary fixes to make the build work with bazel 0.27
       "--incompatible_no_support_tools_in_action_inputs=false"
+      "--incompatible_use_python_toolchains=false"
     ] ++ lib.optional sse42Support "--copt=-msse4.2"
       ++ lib.optional avx2Support "--copt=-mavx2"
       ++ lib.optional fmaSupport "--copt=-mfma";
