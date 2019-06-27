@@ -200,7 +200,7 @@ let
       export TF_IGNORE_MAX_BAZEL_VERSION=1
 
       # don't rebuild the world
-      export TF_SYSTEM_LIBS=${lib.concatStringsSep " " SYSLIBS}
+      #export TF_SYSTEM_LIBS=${lib.concatStringsSep " " SYSLIBS}
 
       export PYTHON_BIN_PATH="${python.interpreter}"
       export PYTHON_LIB_PATH="$NIX_BUILD_TOP/site-packages"
