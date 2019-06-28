@@ -74,16 +74,20 @@ let
   tfFeature = x: if x then "1" else "0";
 
   version = "1.14";
+  variant = if cudaSupport then "_gpu" else "";
+  pname = "tensorflow${variant}";
 
-  pkg = buildBazelPackage rec {
+  bazel-wheel = buildBazelPackage rec {
     # indicate which configuration of the wheel is being built
-    pname = let
-      pythonPrefix = "python${python.pythonVersion}";
-      basename = "tensorflow-wheel";
-      cudaStr = lib.optionalString cudaSupport "-withcuda";
+    name = let
+      python_tag = with lib.versions; "cp${major python.version}${minor python.version}"; # cp37
+      arch_platform = lib.splitString "-" stdenv.hostPlatform.system;
+      platform = lib.last arch_platform; # "linux"
+      arch = lib.head arch_platform; # "x86_64"
     in
-      "${pythonPrefix}-${basename}${cudaStr}";
-    name = "${pname}-${version}";
+      # https://www.python.org/dev/peps/pep-0427/#file-name-convention
+      # tensorflow_gpu-1.14.0-cp27-none-linux_x86_64.whl
+      "${pname}-${version}-${python_tag}-none-${platform}_${arch}.whl";
 
     src = fetchFromGitHub {
       owner = "tensorflow";
@@ -102,6 +106,13 @@ let
         url = "https://github.com/tensorflow/tensorflow/pull/29673/commits/498e35a3bfe38dd75cf1416a1a23c07c3b59e6af.patch";
         sha256 = "1m2qmwv1ysqa61z6255xggwbq6mnxbig749bdvrhnch4zydxb4di";
       })
+
+      # https://github.com/tensorflow/tensorflow/issues/29220
+      (fetchpatch {
+        name = "bazel-0.27.patch";
+        url = "https://github.com/tensorflow/tensorflow/commit/cfccbdb8c4a92dd26382419dceb4d934c2380391.patch";
+        sha256 = "1l56wjia2c4685flsfkkgy471wx3c66wyv8khspv06zchj0k0liw";
+      })
     ];
 
     # On update, it can be useful to steal the changes from gentoo
@@ -119,6 +130,7 @@ let
       # python deps needed during wheel build time
       numpy
       keras-preprocessing
+
       # libs taken from system through the TF_SYS_LIBS mechanism
       absl-py
       astor
@@ -149,6 +161,10 @@ let
       protobuf_cc
       curl
       binutils
+
+      # for building the wheel
+      setuptools
+      wheel
     ] ++ lib.optionals (!isPy3k) [
       future
       mock
@@ -256,6 +272,9 @@ let
     hardeningDisable = [ "all" ];
 
     bazelFlags = [
+      # temporary fixes to make the build work with bazel 0.27
+      "--incompatible_no_support_tools_in_action_inputs=false"
+      "--incompatible_use_python_toolchains=false"
     ] ++ lib.optional sse42Support "--copt=-msse4.2"
       ++ lib.optional avx2Support "--copt=-mavx2"
       ++ lib.optional fmaSupport "--copt=-mfma";
@@ -269,9 +288,9 @@ let
 
       # cudaSupport causes fetch of ncclArchive, resulting in different hashes
       sha256 = if cudaSupport then
-        "148xqmrc6w1s1dfrpfmy1f4y7b93caldvq2ycn4c02n04rdximlx"
+        "0q1pmw7fzn6l554ap576r48m0zgwb7n1ljhyy1p36708z94scdh4"
       else
-        "1bb09y86ni0rmwg6rrnxwhgdxxj87v83hgs6abaryc31am4n45jh";
+        "14n26h2r4w7wd5sddy4w0s51s2qcwf276n3hvv2505iysa8wqlc3";
     };
 
     buildAttrs = {
@@ -281,37 +300,44 @@ let
         # beautiful bash to iterate over files containing a string
         # https://github.com/bazelbuild/bazel/issues/5915#issuecomment-505100422
         # .. to make sure the output directory is covered
-        grep \
-          --files-with-matches \
-          --recursive \
-          --null '/usr/bin/ar\b' \
-          .. | while IFS="" read -r -d "" file; do
+        grep -lrZ '/usr/bin/ar\b' .. | while IFS="" read -r -d "" file; do
             # patch /usr/bin/ar to the proper location
             echo "File is $file"
             sed -i \
               -e 's,/usr/bin/ar\b,${binutils.bintools}/bin/ar,g' \
               "$file"
         done
+
+
+        # Tensorboard pulls in a bunch of dependencies, some of which may
+        # include security vulnerabilities. So we make it optional.
+        # https://github.com/tensorflow/tensorflow/issues/20280#issuecomment-400230560
+        sed -i '/tensorboard >=/d' tensorflow/tools/pip_package/setup.py
       '';
 
+      # Could alternatively use --src instead of --dst to output the sources
+      # instead of a whee. Generating a wheel makes it easier to unify handling
+      # of source and binary build though.
       installPhase = ''
-        sed -i 's,.*bdist_wheel.*,cp -rL . "$out"; exit 0,' bazel-bin/tensorflow/tools/pip_package/build_pip_package 
-        bazel-bin/tensorflow/tools/pip_package/build_pip_package $PWD/dist
+        # work around timestamp issues
+        # https://github.com/NixOS/nixpkgs/issues/270#issuecomment-467583872
+        export SOURCE_DATE_EPOCH=315532800
+
+        # bulid the wheel, then move it to $out (building directly to $out
+        # would actually put it into a *directory* called $out, but we want the
+        # file itself in $out)
+        bazel-bin/tensorflow/tools/pip_package/build_pip_package --dst $PWD/dist
+        mv dist/*.whl "$out"
       '';
     };
-
-    dontFixup = true;
   };
 
 in buildPythonPackage rec {
-  pname = "tensorflow";
-  inherit version;
+  inherit version pname;
 
-  src = pkg;
+  src = bazel-wheel;
 
-  postPatch = lib.optionalString (!withTensorboard) ''
-    sed -i '/tensorboard >=/d' setup.py
-  '';
+  format = "wheel";
 
   # Upstream has a pip hack that results in bin/tensorboard being in both tensorflow
   # and the propagated input tensorflow-tensorboard, which causes environment collisions.
