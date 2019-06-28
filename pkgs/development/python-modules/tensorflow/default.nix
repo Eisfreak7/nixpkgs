@@ -133,7 +133,6 @@ let
 
       # libs taken from system through the TF_SYS_LIBS mechanism
       absl-py
-      cython
       flatbuffers
       gast
       google-pasta # TODO rename to google_pasta
