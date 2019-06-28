@@ -133,7 +133,6 @@ let
 
       # libs taken from system through the TF_SYS_LIBS mechanism
       absl-py
-      libjpeg
       grpc
       grpcio
       hwloc
