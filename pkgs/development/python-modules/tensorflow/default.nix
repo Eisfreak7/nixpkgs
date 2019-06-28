@@ -34,6 +34,8 @@
 , protobuf_cc
 , curl
 , tensorflow-estimator
+, setuptools
+, wheel
 , cudaSupport ? false, nvidia_x11 ? null, cudatoolkit ? null, cudnn ? null, nccl ? null
 # XLA without CUDA is broken
 , xlaSupport ? cudaSupport
@@ -43,9 +45,6 @@
 , avx2Support  ? builtins.elem (stdenv.hostPlatform.platform.gcc.arch or "default") [                                     "haswell" "broadwell" "skylake" "skylake-avx512"]
 , fmaSupport   ? builtins.elem (stdenv.hostPlatform.platform.gcc.arch or "default") [                                     "haswell" "broadwell" "skylake" "skylake-avx512"]
 }:
-
-# TODO https://docs.bazel.build/versions/master/skylark/performance.html#profile-and-analyze-profile
-# TODO disable sandbox? https://github.com/bazelbuild/bazel/blob/acaca5a9e221088112d4abc6c2b6917e55583e47/src/test/shell/integration/sandboxfs_test.sh#L23
 
 assert cudaSupport -> nvidia_x11 != null
                    && cudatoolkit != null
@@ -69,10 +68,6 @@ let
       cudatoolkit.out
       cudatoolkit.lib
       binutils.bintools # for ar, dwp, nm, objcopy, objdump, strip
-      # gcc
-      # gcc.cc
-      # gcc # for ld, cpp, gcc
-      # gcc.cc # for gcov
     ];
   };
 
@@ -113,39 +108,6 @@ let
     # https://gitweb.gentoo.org/repo/gentoo.git/tree/sci-libs/tensorflow
 
     nativeBuildInputs = [ swig which ];
-
-    # curl
-    # ffmpeg
-    # git
-    # libcurl4-openssl-dev
-    # libtool
-    # libssl-dev
-    # mlocate
-    # openjdk-8-jdk
-    # openjdk-8-jre-headless
-    # pkg-config
-    # python-dev
-    # python-setuptools
-    # python-virtualenv
-    # python3-dev
-    # python3-setuptools
-    # rsync
-    # sudo
-    # swig
-    # unzip
-    # vim
-    # wget
-    # zip
-    # zlib1g-dev
-    # golang
-
-    # python wheel
-    # python astor
-    # python gast
-    # python numpy
-    # python termcolor
-    # python keras_applications
-    # python keras_preprocessing
 
     buildInputs = [
       python
@@ -294,8 +256,6 @@ let
     hardeningDisable = [ "all" ];
 
     bazelFlags = [
-      "--action_env=BAZEL_TOOLS_OVERRIDE"
-      "--toolchain_resolution_debug"
     ] ++ lib.optional sse42Support "--copt=-msse4.2"
       ++ lib.optional avx2Support "--copt=-mavx2"
       ++ lib.optional fmaSupport "--copt=-mfma";
@@ -307,7 +267,7 @@ let
         rm -rf $bazelOut/external/{bazel_tools,\@bazel_tools.marker,local_*,\@local_*}
       '';
 
-      # FIXME look into diff
+      # cudaSupport causes fetch of ncclArchive, resulting in different hashes
       sha256 = if cudaSupport then
         "148xqmrc6w1s1dfrpfmy1f4y7b93caldvq2ycn4c02n04rdximlx"
       else
@@ -315,7 +275,6 @@ let
     };
 
     buildAttrs = {
-      # TODO make this part of buildBazelPackage?
       preBuild = ''
         patchShebangs .
 
@@ -355,10 +314,9 @@ in buildPythonPackage rec {
   '';
 
   # Upstream has a pip hack that results in bin/tensorboard being in both tensorflow
-  # and the propageted input tensorflow-tensorboard which causes environment collisions.
-  # another possibility would be to have tensorboard only in the buildInputs
+  # and the propagated input tensorflow-tensorboard, which causes environment collisions.
+  # Another possibility would be to have tensorboard only in the buildInputs
   # https://github.com/tensorflow/tensorflow/blob/v1.7.1/tensorflow/tools/pip_package/setup.py#L79
-  # python3.pkgs.baselines
   postInstall = ''
     rm $out/bin/tensorboard
   '';
@@ -369,13 +327,12 @@ in buildPythonPackage rec {
     astor
     gast
     google-pasta
-    keras-applications # TODO keras_applications
-    keras-preprocessing # TODO keras_preprocessing
+    keras-applications
+    keras-preprocessing
     numpy
     six
     protobuf
-    # tensorboard
-    tensorflow-estimator # TODO tensorflow_estimator
+    tensorflow-estimator
     termcolor
     wrapt
     grpcio
@@ -385,7 +342,7 @@ in buildPythonPackage rec {
   ] ++ lib.optionals (pythonOlder "3.4") [
     backports_weakref enum34
   ] ++ lib.optionals withTensorboard [
-    tensorflow-tensorboard # TODO tensorboard
+    tensorflow-tensorboard
   ];
 
   # Actual tests are slow and impure.
