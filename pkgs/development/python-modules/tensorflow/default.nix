@@ -134,21 +134,6 @@ let
       # libs taken from system through the TF_SYS_LIBS mechanism
       absl-py
       grpcio
-      lmdb
-      nasm
-      sqlite
-      pcre
-      libpng
-      six
-      snappy
-      swig
-      termcolor
-      wrapt
-      zlib
-      protobuf
-      protobuf_cc
-      curl
-      binutils
       libjpeg
 
       # for building the wheel
