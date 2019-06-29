@@ -154,6 +154,7 @@ let
       protobuf_cc
       curl
       binutils
+      libjpeg
 
       # for building the wheel
       setuptools
