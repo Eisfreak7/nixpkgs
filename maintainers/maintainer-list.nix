@@ -1353,6 +1353,11 @@
     github = "domenkozar";
     name = "Domen Kozar";
   };
+  doronbehar = {
+    email = "me@doronbehar.com";
+    github = "doronbehar";
+    name = "Doron Behar";
+  };
   dotlambda = {
     email = "rschuetz17@gmail.com";
     github = "dotlambda";
@@ -2185,7 +2190,7 @@
     name = "Imuli";
   };
   infinisil = {
-    email = "infinisil@icloud.com";
+    email = "contact@infinisil.com";
     github = "infinisil";
     name = "Silvan Mosberger";
   };
@@ -3015,6 +3020,11 @@
     email = "Marc.Fontaine@gmx.de";
     github = "MarcFontaine";
     name = "Marc Fontaine";
+  };
+  magenbluten = {
+    email = "magenbluten@codemonkey.cc";
+    github = "magenbluten";
+    name = "magenbluten";
   };
   magnetophon = {
     email = "bart@magnetophon.nl";
@@ -5736,5 +5746,10 @@
     email = "diego@zzamboni.org";
     github = "zzamboni";
     name = "Diego Zamboni";
+  };
+  turbomack = {
+    email = "marek.faj@gmail.com";
+    github = "turboMaCk";
+    name = "Marek Fajkus";
   };
 }
