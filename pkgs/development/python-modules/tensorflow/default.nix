@@ -149,9 +149,10 @@ let
     ];
 
     # Take as many libraries from the system as possible. Keep in sync with
-    # list of valid syslibs in
+    # list of valid syslibs as of 1.14; current list in
     # https://github.com/perfinion/tensorflow/blob/master/third_party/systemlibs/syslibs_configure.bzl
-    SYSLIBS= [
+    # syslib currently not used are commented out
+    SYSLIBS = [
       "absl_py"
       "astor_archive"
       "boringssl"
