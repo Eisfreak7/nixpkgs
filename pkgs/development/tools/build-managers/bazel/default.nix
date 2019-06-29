@@ -3,8 +3,6 @@
 , bazel
 , lr, xe, zip, unzip, bash, writeCBin, coreutils
 , which, python, gawk, gnused, gnutar, gnugrep, gzip, findutils
-, binutils
-, gcc
 # Apple dependencies
 , cctools, libcxx, CoreFoundation, CoreServices, Foundation
 # Allow to independently override the jdks used to build and run respectively
@@ -90,7 +88,7 @@ let
     #        ],
     #     )
     #
-    [ bash coreutils findutils gawk gnugrep gnutar gnused gzip which unzip binutils.bintools gcc ];
+    [ bash coreutils findutils gawk gnugrep gnutar gnused gzip which unzip ];
 
   # Java toolchain used for the build and tests
   javaToolchain = "@bazel_tools//tools/jdk:toolchain_host${buildJdkName}";
@@ -336,13 +334,6 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     buildJdk
-
-    # bazel detects default tool locations during build time using `which` (in
-    # tools/cpp/unic_cc_configure.bzl:_find_tool). Make sure the tools are in
-    # PATH.
-    # binutils.bintools # for ar, dwp, nm, objcopy, objdump, strip
-    # gcc # for ld, cpp, gcc
-    # gcc.cc # for gcov
   ];
 
   # when a command can’t be found in a bazel build, you might also
@@ -354,11 +345,6 @@ stdenv.mkDerivation rec {
     makeWrapper
     which
     customBash
-
-    # TODO add this in the correct way for cross compilation (e.g. buildInputs but so that it ends up in path)
-    binutils.bintools # for ar, dwp, nm, objcopy, objdump, strip
-    gcc # for ld, cpp, gcc
-    gcc.cc # for gcov
   ] ++ lib.optionals (stdenv.isDarwin) [ cctools libcxx CoreFoundation CoreServices Foundation ];
 
   # Bazel makes extensive use of symlinks in the WORKSPACE.
