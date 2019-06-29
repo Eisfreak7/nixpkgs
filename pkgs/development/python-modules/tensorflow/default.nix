@@ -249,7 +249,7 @@ let
     bazelFlags = [
       # temporary fixes to make the build work with bazel 0.27
       "--incompatible_no_support_tools_in_action_inputs=false"
-      "--incompatible_use_python_toolchains=false"
+      # "--incompatible_use_python_toolchains=false"
     ] ++ lib.optional sse42Support "--copt=-msse4.2"
       ++ lib.optional avx2Support "--copt=-mavx2"
       ++ lib.optional fmaSupport "--copt=-mfma";
@@ -263,9 +263,9 @@ let
 
       # cudaSupport causes fetch of ncclArchive, resulting in different hashes
       sha256 = if cudaSupport then
-        "0q1pmw7fzn6l554ap576r48m0zgwb7n1ljhyy1p36708z94scdh4"
+        "0000000000000000000000000000000000000000000000000000"
       else
-        "14n26h2r4w7wd5sddy4w0s51s2qcwf276n3hvv2505iysa8wqlc3";
+        "0000000000000000000000000000000000000000000000000000";
     };
 
     buildAttrs = {
