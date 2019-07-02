@@ -298,10 +298,13 @@ let
         # https://github.com/NixOS/nixpkgs/issues/270#issuecomment-467583872
         export SOURCE_DATE_EPOCH=315532800
 
-        # bulid the wheel, then move it to $out (building directly to $out
+        # Build the wheel, then move it to $out (building directly to $out
         # would actually put it into a *directory* called $out, but we want the
-        # file itself in $out)
-        bazel-bin/tensorflow/tools/pip_package/build_pip_package --dst $PWD/dist
+        # file itself in $out). Adding `--gpu` changes the project name to
+        # tensorflow-gpu.
+        bazel-bin/tensorflow/tools/pip_package/build_pip_package \
+            --dst $PWD/dist${ lib.optionalString cudaSupport " --gpu" }
+
         mv dist/*.whl "$out"
       '';
     };
