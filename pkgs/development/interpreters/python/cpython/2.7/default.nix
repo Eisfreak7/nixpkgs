@@ -81,6 +81,7 @@ let
 
       # https://bugs.python.org/issue13146
       ./atomic_pyc.patch
+      ./importrename.patch
     ] ++ optionals (x11Support && stdenv.isDarwin) [
       ./use-correct-tcl-tk-on-darwin.patch
     ] ++ optionals stdenv.isLinux [

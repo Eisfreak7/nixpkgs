@@ -1,0 +1,80 @@
+diff --git a/Python/import.c b/Python/import.c
+index 397f485..0c71073 100644
+--- a/Python/import.c
++++ b/Python/import.c
+@@ -951,6 +951,7 @@ static void
+ write_compiled_module(PyCodeObject *co, char *cpathname, struct stat *srcstat, time_t mtime)
+ {
+     FILE *fp;
++    char *cpathname_tmp;
+ #ifdef MS_WINDOWS   /* since Windows uses different permissions  */
+     mode_t mode = srcstat->st_mode & ~S_IEXEC;
+     /* Issue #6074: We ensure user write access, so we can delete it later
+@@ -963,7 +964,20 @@ write_compiled_module(PyCodeObject *co, char *cpathname, struct stat *srcstat, t
+     mode_t mode = srcstat->st_mode & ~S_IXUSR & ~S_IXGRP & ~S_IXOTH;
+ #endif
+ 
+-    fp = open_exclusive(cpathname, mode);
++    /* Under POSIX, we first write to a tmp file and then take advantage
++       of atomic renaming. */
++
++    /* first construct the filename with a .tmp suffix */
++    cpathname_tmp = PyMem_MALLOC(strlen(cpathname) + 5);
++    if (cpathname_tmp == NULL) {
++        PyErr_Clear();
++        return;
++    }
++    strcpy(cpathname_tmp, cpathname);
++    strcpy(cpathname_tmp + strlen(cpathname), ".tmp");
++
++    /* now write to the file with the tmp suffix */
++    fp = open_exclusive(cpathname_tmp, mode);
+     if (fp == NULL) {
+         if (Py_VerboseFlag)
+             PySys_WriteStderr(
+@@ -974,14 +988,7 @@ write_compiled_module(PyCodeObject *co, char *cpathname, struct stat *srcstat, t
+     /* First write a 0 for mtime */
+     PyMarshal_WriteLongToFile(0L, fp, Py_MARSHAL_VERSION);
+     PyMarshal_WriteObjectToFile((PyObject *)co, fp, Py_MARSHAL_VERSION);
+-    if (fflush(fp) != 0 || ferror(fp)) {
+-        if (Py_VerboseFlag)
+-            PySys_WriteStderr("# can't write %s\n", cpathname);
+-        /* Don't keep partial file */
+-        fclose(fp);
+-        (void) unlink(cpathname);
+-        return;
+-    }
++    fflush(fp);
+     /* Now write the true mtime (as a 32-bit field) */
+     if (Py_GETENV("DETERMINISTIC_BUILD") == NULL) {
+         fseek(fp, 4L, 0);
+@@ -989,9 +996,29 @@ write_compiled_module(PyCodeObject *co, char *cpathname, struct stat *srcstat, t
+         PyMarshal_WriteLongToFile((long)mtime, fp, Py_MARSHAL_VERSION);
+         fflush(fp);
+     }
++    if (fflush(fp) != 0 || ferror(fp)) {
++        if (Py_VerboseFlag)
++            PySys_WriteStderr("# can't write %s\n", cpathname);
++        /* Don't keep partial file */
++        fclose(fp);
++        (void) unlink(cpathname_tmp);
++        goto error_exit;
++    }
+     fclose(fp);
++    /* Under POSIX, do an atomic rename */
++    if (rename(cpathname_tmp, cpathname)) {
++        if (Py_VerboseFlag)
++            PySys_WriteStderr("# can't write %R\n", cpathname);
++        /* Don't keep tmp file */
++        unlink(cpathname_tmp);
++        goto error_exit;
++    };
+     if (Py_VerboseFlag)
+         PySys_WriteStderr("# wrote %s\n", cpathname);
++
++error_exit:
++    PyMem_FREE(cpathname_tmp);
++    return;
+ }
+ 
+ static void
