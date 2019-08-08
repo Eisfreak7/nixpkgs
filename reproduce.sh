@@ -24,3 +24,4 @@ nix-shell -A digikam --command '
 # hit faces tab
 # click scan collection for new faces -> detect faces, clear unconfirmed results and rescan -> scan
 # select the `Unknown` tag to make sure thumbnails are shown
+# https://bugs.kde.org/show_bug.cgi?id=399923
