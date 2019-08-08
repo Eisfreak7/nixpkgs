@@ -3,11 +3,12 @@
 }:
 
 stdenv.mkDerivation rec {
-  name = "libosinfo-1.2.0";
+  pname = "libosinfo";
+  version = "1.5.0";
 
   src = fetchurl {
-    url = "https://releases.pagure.org/libosinfo/${name}.tar.gz";
-    sha256 = "0y2skfrcg38y212qqd26vs3sg566j3qnsgvvm23pfi4j7z7ly9gf";
+    url = "https://releases.pagure.org/${pname}/${pname}-${version}.tar.gz";
+    sha256 = "12b0xj9fz9q91d1pz9xm6aqap5k1ip0m9m3qvqmwjy1lk1kjasdz";
   };
 
   outputs = [ "out" "dev" "devdoc" ];
@@ -20,15 +21,16 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./osinfo-db-data-dir.patch
-    # Fix bug causing tests to fail (and presumably the real scenarios they're representative of)
-    # using upstream commits:
+    # https://nvd.nist.gov/vuln/detail/CVE-2019-13313
     (fetchpatch {
-      url = "https://gitlab.com/libosinfo/libosinfo/commit/b9cb227842948b1b2289cdd3e9b8d925664c2ee7.patch";
-      sha256 = "0nj0wmibq52j8qbzmxfzj76fpkqjs18kssbb9lmfhz16s30darbw";
+      url = "https://gitlab.com/libosinfo/libosinfo/commit/3654abee6ead9f11f8bb9ba8fc71efd6fa4dabbc.patch";
+      name = "CVE-2019-13313-1.patch";
+      sha256 = "1lybywfj6b41zfjk33ap90bab5l84lf5y3kif7vd2b6wq5r91rcn";
     })
     (fetchpatch {
-      url = "https://gitlab.com/libosinfo/libosinfo/commit/e6168463f4fc659b9827b5c8694dc1c6d7d5239a.patch";
-      sha256 = "135yfhjm2wxip5dnng3r9k9igfhdi1083ys4a4f3ipjxfskcs9rv";
+      url = "https://gitlab.com/libosinfo/libosinfo/commit/08fb8316b4ac42fe74c1fa5ca0ac593222cdf81a.patch";
+      name = "CVE-2019-13313-2.patch";
+      sha256 = "1f6rhkrgy3j8nmidk97wnz6p35zs1dsd63d3np76q7qs7ra74w9z";
     })
   ];
 

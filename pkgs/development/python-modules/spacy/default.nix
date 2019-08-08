@@ -17,20 +17,23 @@
 , pathlib
 , msgpack-python
 , msgpack-numpy
+, jsonschema
+, blis
+, wasabi
+, srsly
 }:
 
 buildPythonPackage rec {
   pname = "spacy";
-  version = "2.0.18";
+  version = "2.1.7";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "0mybdms7c40jvk8ak180n65anjiyg4c8gkaqwkzicrd1mxq3ngqj";
+    sha256 = "0k4kh9jnpdawaqjxwcdi2h01s85s5r338ajgv9kkq59iha4hichh";
   };
 
   prePatch = ''
     substituteInPlace setup.py \
-      --replace "regex==" "regex>=" \
       --replace "plac<1.0.0,>=0.9.6" "plac>=0.9.6"
   '';
 
@@ -48,6 +51,10 @@ buildPythonPackage rec {
    ftfy
    msgpack-python
    msgpack-numpy
+   jsonschema
+   blis
+   wasabi
+   srsly
   ] ++ lib.optional (pythonOlder "3.4") pathlib;
 
   checkInputs = [
@@ -63,6 +70,6 @@ buildPythonPackage rec {
     description = "Industrial-strength Natural Language Processing (NLP) with Python and Cython";
     homepage = https://github.com/explosion/spaCy;
     license = licenses.mit;
-    maintainers = with maintainers; [ sdll ];
+    maintainers = with maintainers; [ danieldk sdll ];
     };
 }

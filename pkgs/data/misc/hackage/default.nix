@@ -1,6 +1,6 @@
 { fetchurl }:
 
 fetchurl {
-  url = "https://github.com/commercialhaskell/all-cabal-hashes/archive/f59e85c25b8e9f07459338884e25d16752839b54.tar.gz";
-  sha256 = "0yapmana2kzsixmgghj76w3s546d258rbzw7qmfqhi6bxyhc6a86";
+  url = "https://github.com/commercialhaskell/all-cabal-hashes/archive/4db96602103463d72e59ce214d0da8af35405f07.tar.gz";
+  sha256 = "14r7m3555ngfafk2wgdj4lnv7zzajcc4j4fiws4k3kr3xwbrwrxr";
 }

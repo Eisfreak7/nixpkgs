@@ -8,13 +8,13 @@ assert stdenv.lib.versionAtLeast mlt.version "6.8.0";
 
 stdenv.mkDerivation rec {
   name = "shotcut-${version}";
-  version = "18.12.23";
+  version = "19.07.15";
 
   src = fetchFromGitHub {
     owner = "mltframework";
     repo = "shotcut";
     rev = "v${version}";
-    sha256 = "1i6gkqvg31q7g5s3zgqzg4i5kyas7k4svclgbk459i5h1ar3v5vn";
+    sha256 = "0drl0x8x45kysalzx1pbg0gkvlxaykg9zka1fdkrl4iqfs4s7vv2";
   };
 
   enableParallelBuilding = true;
