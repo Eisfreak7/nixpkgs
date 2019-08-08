@@ -15,7 +15,10 @@ nix-shell -A digikam --command '
 	cmake -DCMAKE_INSTALL_PREFIX=/home/timo/tmp/res -DCMAKE_BUILD_TYPE=debug . &&
 	make -j4 &&
 	make install &&
-	gdb -q -ex r core/app/digikam;
+	echo "gdb -q -ex r core/app/digikam" > run-in-gdb.sh &&
+	chmod +x run-in-gdb.sh &&
+	wrapQtApp run-in-gdb.sh &&
+	./run-in-gdb.sh;
 	return
 '
 
