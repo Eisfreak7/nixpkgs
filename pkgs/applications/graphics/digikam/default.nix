@@ -1,5 +1,5 @@
 { mkDerivation, lib, fetchFromGitHub, cmake, doxygen, extra-cmake-modules, wrapGAppsHook
-
+, fetchgit
 # For `digitaglinktree`
 , perl, sqlite
 
@@ -52,13 +52,11 @@
 
 mkDerivation rec {
   pname   = "digikam";
-  version = "6.2.0";
+  version = "2019-08-11";
 
-  src = fetchFromGitHub {
-    owner  = "KDE";
-    repo   = "digikam";
-    rev    = "v${version}";
-    sha256 = "1l1nb1nwicmip2jxhn5gzr7h60igvns0zs3kzp36r6qf4wvg3v2z";
+  src = builtins.fetchGit {
+    url = "https://invent.kde.org/kde/digikam.git";
+    rev = "b436cb9c0b04da9efff0bda66cf10b71271a1857";
   };
 
   nativeBuildInputs = [ cmake doxygen extra-cmake-modules kdoctools wrapGAppsHook ];
