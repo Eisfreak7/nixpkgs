@@ -1,0 +1,12 @@
+Full successful scans w/ opencv4: III (45min)
+Full successful scans w/ opencv3: I (45min)
+
+11:00: full scan w/ master branch and opencv 3 (no special cuda): Unknown category listed; segfault after 20min (was not entirely clean)
+
+13:40: entirely clean home and XDG, full scan w/ face branch and opencv 3 (no special cuda): Unknown category listed; segfault after 20min
+
+14:06: Running entirely clean home and XDG, full scan w/ face branch and opencv 4 (no special cuda): crash
+
+15:55: Running entirely clean home and XDG, full scan w/ face branch and opencv 4 (no special cuda): crash?
+
+16:55: retry: Running entirely clean home and XDG, full scan w/ face branch and opencv 4 (no special cuda): another crash.

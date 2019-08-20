@@ -1,21 +1,27 @@
-rm -rf ~/tmp/source
-rm -rf ~/tmp/res
-rm -f ~/pictures/*.db
-rm -f ~/.config/digikamrc
-rm -rf ~/.local/share/digikam
-rm -rf ~/.cache/digikam
-mkdir -p ~/tmp/res
+# rm -rf ~/tmp/source
+# rm -rf ~/tmp/digikam
+# rm -rf ~/tmp/res
+# rm -f ~/pictures/*.db
+# rm -f ~/.config/digikamrc
+# rm -rf ~/.local/share/digikam
+# rm -rf ~/.cache/digikam
+# mkdir -p ~/tmp/res
+ppwd="$PWD"
+export HOME=$(mktemp -d)
+for i in `env | sed 's/=.*//' | grep XDG`; do unset $i; done
+cd "$HOME"
+mkdir -p "$HOME/Pictures"
+mkdir -p "$HOME/build/share"
+export XDG_DATA_DIRS="$HOME/build/share"
+ln -s /home/timo/tmp/deletable-pics "$HOME/Pictures/p"
 
-nix-shell -A digikam --command '
-	cd ~/tmp &&
+nix-shell -A digikam "$ppwd" --command '
 	unpackPhase &&
-	echo waiting &&
-	true || read &&
-	cd source &&
-	cmake -DCMAKE_INSTALL_PREFIX=/home/timo/tmp/res -DCMAKE_BUILD_TYPE=debug . &&
+	cd digikam || cd source &&
+	cmake -DCMAKE_INSTALL_PREFIX=$HOME/build -DCMAKE_BUILD_TYPE=debug . &&
 	make -j4 &&
 	make install &&
-	echo "gdb -q -ex r core/app/digikam" > run-in-gdb.sh &&
+	echo -e "gdb -q -ex r core/app/digikam" > run-in-gdb.sh &&
 	chmod +x run-in-gdb.sh &&
 	wrapQtApp run-in-gdb.sh &&
 	./run-in-gdb.sh;

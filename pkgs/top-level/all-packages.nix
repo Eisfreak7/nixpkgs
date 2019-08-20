@@ -21744,7 +21744,7 @@ in
     inherit (plasma5) oxygen;
     inherit (kdeApplications) akonadi-contacts kcalcore;
     ffmpeg = ffmpeg_4;
-    opencv3 = opencv3WithoutCuda;
+    # opencv3 = opencv3WithoutCuda;
   };
 
   displaycal = (newScope pythonPackages) ../applications/graphics/displaycal {};

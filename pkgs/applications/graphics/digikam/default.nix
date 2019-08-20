@@ -38,7 +38,7 @@
 , marble
 , libGL
 , libGLU
-, opencv3
+, opencv4
 , pcre
 , threadweaver
 
@@ -52,12 +52,13 @@
 
 mkDerivation rec {
   pname   = "digikam";
-  version = "2019-08-11";
+  version = "2019-08-11-DNN";
 
-  src = builtins.fetchGit {
-    url = "https://invent.kde.org/kde/digikam.git";
-    rev = "b436cb9c0b04da9efff0bda66cf10b71271a1857";
-  };
+  src = lib.cleanSource /home/timo/repos/digikam;
+  # src = builtins.fetchGit {
+  #   url = "https://anongit.kde.org/digikam.git";
+  #   rev = "0b749b2623ee3b0b9561bf9a47178e8fbdbe8c55";
+  # };
 
   nativeBuildInputs = [ cmake doxygen extra-cmake-modules kdoctools wrapGAppsHook ];
 
@@ -79,7 +80,7 @@ mkDerivation rec {
     libusb1
     libGL
     libGLU
-    opencv3
+    opencv4
     pcre
 
     qtbase
