@@ -13,6 +13,9 @@ cd "$HOME"
 mkdir -p "$HOME/Pictures"
 mkdir -p "$HOME/build/share"
 export XDG_DATA_DIRS="$HOME/build/share"
+export PKG_CONFIG_PATH="/home/timo/tmp/opencv-install/lib64/pkgconfig:$PKG_CONFIG_PATH"
+export LD_LIBRARY_PATH="/home/timo/tmp/opencv-install/lib64:$LD_LIBRARY_PATH"
+export PATH="/home/timo/tmp/opencv-install/bin:$PATH"
 ln -s /home/timo/tmp/deletable-pics "$HOME/Pictures/p"
 
 nix-shell -A digikam "$ppwd" --command '

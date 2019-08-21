@@ -38,7 +38,7 @@
 , marble
 , libGL
 , libGLU
-, opencv4
+# , opencv4
 , pcre
 , threadweaver
 
@@ -80,7 +80,7 @@ mkDerivation rec {
     libusb1
     libGL
     libGLU
-    opencv4
+    # opencv4
     pcre
 
     qtbase
